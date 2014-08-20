@@ -23,6 +23,7 @@ SECRET_KEY = '+o1gdu&=qc)!2ydx1f*mp*&bk=lu83h#3rzb+018&eh^&(1)1u'
 DEBUG = True
 
 TEMPLATE_DEBUG = True
+TEMPLATE_DIRS = ('templates',)
 
 ALLOWED_HOSTS = []
 
