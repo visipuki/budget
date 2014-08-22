@@ -1,9 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
 {% if latest_spending_list %}
   <ul>
   {% for spending in latest_spending_list %}
-    <li>{{spending.data }}  {{ spending.spendingType }} {{spending.money }}</li>
+    <li>{{spending.data }}  {{ spending.spendingType }} {{spending.money }} {{  spending.owner}}</li>
   {% endfor %}
   </ul>
 {% else %}
   <p>Нет записей</p>
 {% endif %}
+{% endblock %}
