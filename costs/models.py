@@ -11,7 +11,7 @@ class SpendingType(models.Model):
 
 class Spending(models.Model):
     spendingType = models.ForeignKey(SpendingType)
-    money = models.DecimalField(max_digits=7, decimal_places=2)
-    data = models.DateField() #datE
+    money = models.IntegerField(max_value=1000000)
+    date = models.DateField()
     owner = models.ForeignKey(User)
     comment = models.CharField(max_length=32)

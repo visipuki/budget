@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
-from record.models import Spending
-from record.forms import SpendingForm
+from costs.models import Spending
+from costs.forms import SpendingForm
 from datetime import datetime
 
 
@@ -29,5 +29,5 @@ def spendingView(request):
     context = {'latest_spending_list': latest_spending_list,
                'form': form}
     return render(request,
-                  'record/index.html',
+                  'costs/index.html',
                   context)

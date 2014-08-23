@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from record.models import SpendingType
+from costs.models import SpendingType
 
 
 class SpendingForm(forms.Form):
