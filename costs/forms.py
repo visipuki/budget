@@ -12,9 +12,7 @@ class SpendingForm(forms.Form):
                                          '%d/%m/%Y',
                                          '%d.%m.%y',
                                          '%d.%m.%Y'])
-    money = forms.DecimalField(max_digits=7,
-                               decimal_places=2,
-                               label ='Расход*',
+    money = forms.IntegerField(label ='Расход*',
                                required=True)
     comment = forms.CharField(max_length=32, required=False,
                               label='комментарий')

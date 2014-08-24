@@ -11,7 +11,8 @@ class SpendingType(models.Model):
 
 class Spending(models.Model):
     spendingType = models.ForeignKey(SpendingType)
-    money = models.IntegerField(max_value=1000000)
+    money = models.IntegerField()
     date = models.DateField()
+    modified = models.DateTimeField(auto_now=True)
     owner = models.ForeignKey(User)
     comment = models.CharField(max_length=32)

@@ -20,12 +20,13 @@ def spendingView(request):
             Spending(spendingType=spendingType,
                      money=money,
                      comment=comment,
-                     data=date,
+                     date=date,
                      owner=owner).save()
             return HttpResponseRedirect('/')
     else:
         form = SpendingForm(initial={'date': datetime.today().strftime('%d-%m-%y')})
-    latest_spending_list = Spending.objects.order_by('-data')[:5]
+    l = Spending.objects.order_by('-modified')[:5]
+    latest_spending_list = l[::-1]
     context = {'latest_spending_list': latest_spending_list,
                'form': form}
     return render(request,
