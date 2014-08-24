@@ -1,9 +1,15 @@
 <html>
 <head>
-  {% block title %}{% endblock %}
+{% block title %}{% endblock %}
 </head>
 <body>
-<a href='/accounts/logout/?next=/{% block logout %}{% endblock %}'>Выйти</a>
-  {% block content %}{% endblock %}
+<a href='/accounts/logout/?next=/{% block logout %}{% endblock %}'>Выйти</a>({{ username }})
+<div>
+  <a href='/'>Траты</a>|
+  <a href='/income/'>Доход</a>|
+  <a href='/analytics/'>Анализ расходов</a>
+  <a href='/'></a>
+</div>
+{% block content %}{% endblock %}
 </body>
 </html>

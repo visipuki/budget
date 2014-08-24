@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from costs.models import Spending
 from costs.forms import SpendingForm
-from datetime import datetime
+from datetime import date as d
 
 
 @login_required
@@ -24,11 +24,12 @@ def spendingView(request):
                      owner=owner).save()
             return HttpResponseRedirect('/')
     else:
-        form = SpendingForm(initial={'date': datetime.today().strftime('%d-%m-%y')})
+        form = SpendingForm(initial={'date': d.today().strftime('%d-%m-%y')})
     l = Spending.objects.order_by('-modified')[:5]
     latest_spending_list = l[::-1]
     context = {'latest_spending_list': latest_spending_list,
-               'form': form}
+               'form': form,
+               'username': request.user}
     return render(request,
                   'costs/index.html',
                   context)
