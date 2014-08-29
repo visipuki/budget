@@ -15,16 +15,19 @@ def spendingView(request):
             money = form.cleaned_data['money']
             comment = form.cleaned_data['comment']
             spendingType = form.cleaned_data['spendingType']
+            is_cash = form.cleaned_data['is_cash']
             owner = form.cleaned_data['owner']
             if not owner: owner = request.user
             Spending(spendingType=spendingType,
                      money=money,
                      comment=comment,
                      date=date,
-                     owner=owner).save()
+                     owner=owner,
+                     is_cash=is_cash).save()
             return HttpResponseRedirect('/')
     else:
-        form = SpendingForm(initial={'date': d.today().strftime('%d-%m-%y')})
+        form = SpendingForm(initial={'date': d.today().strftime('%d-%m-%y'),
+                                     'is_cash': True})
     l = Spending.objects.order_by('-modified')[:5]
     latest_spending_list = l[::-1]
     context = {'latest_spending_list': latest_spending_list,

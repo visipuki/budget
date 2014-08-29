@@ -16,3 +16,10 @@ class Spending(models.Model):
     modified = models.DateTimeField(auto_now=True)
     owner = models.ForeignKey(User)
     comment = models.CharField(max_length=32)
+    is_cash = models.BooleanField()
+
+    def __str__(self):
+        return r'{} / {} / {} / {} руб.'.format(self.date.strftime('%d-%m-%Y'),
+                                            self.owner,
+                                            self.spendingType,
+                                            self.money)

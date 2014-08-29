@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
-{% if latest_spending_list %}
+{% if latest_income_list %}
   <ul>
-  {% for spending in latest_spending_list %}
-    <li>{{ spending }}</li>
+  {% for income in latest_income_list %}
+    <li>{{ income }}</li>
   {% endfor %}
   </ul>
 {% else %}
