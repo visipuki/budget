@@ -3,7 +3,7 @@
 {% if latest_income_list %}
   <ul>
   {% for income in latest_income_list %}
-    <li>{{ income }}</li>
+    <li><a href='/income/{{ income.pk }}/'>{{ income }}</a></li>
   {% endfor %}
   </ul>
 {% else %}

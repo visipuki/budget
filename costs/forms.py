@@ -23,10 +23,5 @@ class SpendingForm(forms.Form):
     spendingType = forms.ModelChoiceField(queryset=SpendingType.objects.all(),
                                           required=True,
                                           label='тип*')
-    is_cash = forms.BooleanField(required=True,
+    is_cash = forms.BooleanField(required=False,
                                  label='наличные')
-
-
-class RemoveForm(forms.Form):
-    pass
-

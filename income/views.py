@@ -7,7 +7,18 @@ from datetime import date as d
 
 
 @login_required
-def incomeView(request):
+def incomeView(request, *args):
+    if args:
+        i = Income.objects.get(pk=args[0])
+        initial_form_values = {'date': i.date.strftime('%d-%m-%y'),
+                               'money': i.money,
+                               'comment': i.comment,
+                               'owner': i.owner,
+                               'incomeType': i.incomeType,
+                               'is_cash': i.is_cash}
+    else:
+        initial_form_values = {'date': d.today().strftime('%d-%m-%y'),
+                               'is_cash': True}
     if request.method == 'POST':
         form = IncomeForm(request.POST)
         if form.is_valid():
@@ -25,15 +36,14 @@ def incomeView(request):
                    date=date,
                    owner=owner,
                    is_cash=is_cash).save()
-            return HttpResponseRedirect('/')
+            return HttpResponseRedirect('/income/')
     else:
-        form = IncomeForm(initial={'date': d.today().strftime('%d-%m-%y'),
-                                   'is_cash': True})
+        form = IncomeForm(initial=initial_form_values)
     l = Income.objects.order_by('-modified')[:5]
     latest_income_list = l[::-1]
     context = {'latest_income_list': latest_income_list,
                'form': form,
                'username': request.user}
     return render(request,
-                  'costs/index.html',
+                  'income/index.html',
                   context)

@@ -3,7 +3,7 @@
 {% if latest_spending_list %}
   <ul>
   {% for spending in latest_spending_list %}
-    <li>{{ spending }}</li>
+     <li><a href='/{{ spending.pk }}/'>{{ spending }}</a></li>
   {% endfor %}
   </ul>
 {% else %}

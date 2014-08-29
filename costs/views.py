@@ -7,7 +7,18 @@ from datetime import date as d
 
 
 @login_required
-def spendingView(request):
+def spendingView(request, *args):
+    if args:
+        i = Spending.objects.get(pk=args[0])
+        initial_form_values = {'date': i.date.strftime('%d-%m-%y'),
+                               'money': i.money,
+                               'comment': i.comment,
+                               'owner': i.owner,
+                               'spendingType': i.spendingType,
+                               'is_cash': i.is_cash}
+    else:
+        initial_form_values = {'date': d.today().strftime('%d-%m-%y'),
+                               'is_cash': True}
     if request.method == 'POST':
         form = SpendingForm(request.POST)
         if form.is_valid():
@@ -17,7 +28,8 @@ def spendingView(request):
             spendingType = form.cleaned_data['spendingType']
             is_cash = form.cleaned_data['is_cash']
             owner = form.cleaned_data['owner']
-            if not owner: owner = request.user
+            if not owner:
+                owner = request.user
             Spending(spendingType=spendingType,
                      money=money,
                      comment=comment,
@@ -26,8 +38,7 @@ def spendingView(request):
                      is_cash=is_cash).save()
             return HttpResponseRedirect('/')
     else:
-        form = SpendingForm(initial={'date': d.today().strftime('%d-%m-%y'),
-                                     'is_cash': True})
+        form = SpendingForm(initial=initial_form_values)
     l = Spending.objects.order_by('-modified')[:5]
     latest_spending_list = l[::-1]
     context = {'latest_spending_list': latest_spending_list,
