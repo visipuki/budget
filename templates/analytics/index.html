@@ -4,9 +4,14 @@
 {{ form.as_p }}
 <input type="submit" value="Обновить" />
 </form>
-<ul>
+<ul>Процентное соотношение трат по типам
 {% for type, perc in relation.items %}
   <li>{{type}} = {{perc}} %</li>
+{% endfor %}
+</ul>
+<ul>Сумма трат по типам
+{% for type, tot in totals.items %}
+  <li>{{type}} = {{tot}} руб.</li>
 {% endfor %}
 </ul>
 {% endblock %}
