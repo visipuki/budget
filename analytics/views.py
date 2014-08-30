@@ -43,7 +43,7 @@ def spending_percentage_relation(start, end):
     # per specified period
     spendingList = Spending.objects.filter(date__gte=start,
                                            date__lte=end)
-    summ = 0
+    summ = 0 #добавить условие для 0
     relation = {spendingType.name: 0 for spendingType in SpendingType.objects.all()}
     for i in spendingList:
         summ += i.money

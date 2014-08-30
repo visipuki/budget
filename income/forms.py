@@ -17,7 +17,7 @@ class IncomeForm(forms.Form):
     comment = forms.CharField(max_length=32, required=False,
                               label='комментарий')
     owner = forms.ModelChoiceField(queryset=User.objects.all(),
-                                   empty_label="я",
+                                   empty_label=None,
                                    required=False,
                                    label='автор')
     incomeType = forms.ModelChoiceField(queryset=IncomeType.objects.all(),
