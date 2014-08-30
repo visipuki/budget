@@ -27,8 +27,8 @@ def spendingView(request, *args):
                                    'owner': user}
         form = SpendingForm(initial=initial_form_values)
         l = Spending.objects.order_by('-modified')[:5]
-        latest_spending_list = l[::-1]
-        context = {'latest_spending_list': latest_spending_list,
+        l = l[::-1]
+        context = {'latest_spending_list': l,
                    'form': form,
                    'username': user}
         return render(request,
