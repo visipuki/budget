@@ -1,8 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
-from costs.models import Spending
-from costs.forms import SpendingForm
+from spending.models import Spending
+from spending.forms import SpendingForm
+from income.models import IncomeType
 from datetime import date as d
 
 
@@ -14,17 +15,9 @@ def spendingView(request, *args):
     else:
         user = request.user
         if args:
-            i = Spending.objects.get(pk=args[0])
-            initial_form_values = {'date': i.date.strftime('%d-%m-%y'),
-                                   'money': i.money,
-                                   'comment': i.comment,
-                                   'owner': i.owner,
-                                   'spendingType': i.spendingType,
-                                   'is_cash': i.is_cash}
+            initial_form_values = initial_from_spending_object(args[0])
         else:
-            initial_form_values = {'date': d.today().strftime('%d-%m-%y'),
-                                   'is_cash': True,
-                                   'owner': user}
+            initial_form_values = generate_initial(user)
         form = SpendingForm(initial=initial_form_values)
         l = Spending.objects.order_by('-modified')[:5]
         l = l[::-1]
@@ -32,7 +25,7 @@ def spendingView(request, *args):
                    'form': form,
                    'username': user}
         return render(request,
-                      'costs/index.html',
+                      'spending/index.html',
                       context)
 
 
@@ -43,13 +36,36 @@ def save_spending(request):
         money = form.cleaned_data['money']
         comment = form.cleaned_data['comment']
         spendingType = form.cleaned_data['spendingType']
-        is_cash = form.cleaned_data['is_cash']
+        incomeType = form.cleaned_data['incomeType']
         owner = form.cleaned_data['owner']
-        if not owner:
-            owner = request.user
         Spending(spendingType=spendingType,
                  money=money,
                  comment=comment,
                  date=date,
                  owner=owner,
-                 is_cash=is_cash).save()
+                 incomeType=incomeType).save()
+
+
+def initial_from_spending_object(pk):
+    i = Spending.objects.get(pk)
+    initial = {
+        'date':         i.date.strftime('%d-%m-%y'),
+        'money':        i.money,
+        'comment':      i.comment,
+        'owner':        i.owner,
+        'spendingType': i.spendingType,
+        'incomeType':   i.incomeType
+    }
+    return initial
+
+
+def generate_initial(user):
+    initial = {
+        'date':         d.today().strftime('%d-%m-%y'),
+        'incomeType':   IncomeType.objects.filter(
+            incometype__owner__eq=user,
+            incometype__is_default=True
+            ).name,
+        'owner':        user
+    }
+    return initial

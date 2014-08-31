@@ -1,5 +1,5 @@
 from django import forms
-from costs.models import SpendingType
+from spending.models import SpendingType
 
 
 class DateRangeForm(forms.Form):

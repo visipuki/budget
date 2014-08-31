@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from analytics.forms import DateRangeForm
 from datetime import date
 from datetime import datetime
-from costs.models import SpendingType as Sp_t
+from spending.models import SpendingType as Sp_t
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 
@@ -19,7 +19,9 @@ def analyticsView(request, *args):
                 end, start = start, end
             start_str = start.strftime('%d-%m-%Y')
             end_str = end.strftime('%d-%m-%Y')
-            return HttpResponseRedirect('/analytics/'+start_str+'_'+end_str+'/')
+            return HttpResponseRedirect(
+                '/analytics/'+start_str+'_'+end_str+'/'
+            )
     else:
         if not args:
             end = date.today()

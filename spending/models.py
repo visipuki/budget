@@ -1,9 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
+from income.models import IncomeType
 
 
 class SpendingType(models.Model):
-    name = models.CharField(max_length=16)
+    name = models.CharField(max_length=16, unique=True)
 
     def __str__(self):
         return self.name
@@ -16,10 +17,12 @@ class Spending(models.Model):
     modified = models.DateTimeField(auto_now=True)
     owner = models.ForeignKey(User)
     comment = models.CharField(max_length=32)
-    is_cash = models.BooleanField()
+    incomeType = models.ForeignKey(IncomeType)
 
     def __str__(self):
-        return r'{} / {} / {} / {} руб.'.format(self.date.strftime('%d-%m-%Y'),
-                                            self.owner,
-                                            self.spendingType,
-                                            self.money)
+        return r'{} / {} / {} / {} руб.'.format(
+            self.date.strftime('%d-%m-%Y'),
+            self.owner,
+            self.spendingType,
+            self.money
+        )

@@ -14,26 +14,22 @@ def incomeView(request, *args):
     else:
         user = request.user
         if args:
-            i = Income.objects.get(pk=args[0])
-            initial_form_values = {'date': i.date.strftime('%d-%m-%y'),
-                                   'money': i.money,
-                                   'comment': i.comment,
-                                   'owner': i.owner,
-                                   'incomeType': i.incomeType,
-                                   'is_cash': i.is_cash}
+            initial_form_values = initial_from_object(args[0])
         else:
-            initial_form_values = {'date': d.today().strftime('%d-%m-%y'),
-                                   'is_cash': True,
-                                   'owner': user}
+            initial_form_values = generate_initial(user)
         form = IncomeForm(initial=initial_form_values)
         l = Income.objects.order_by('-modified')[:5]
         latest_income_list = l[::-1]
-        context = {'latest_income_list': latest_income_list,
-                   'form': form,
-                   'username': user}
-        return render(request,
-                      'income/index.html',
-                      context)
+        context = {
+            'latest_income_list': latest_income_list,
+            'form': form,
+            'username': user
+        }
+        return render(
+            request,
+            'income/index.html',
+            context
+        )
 
 
 def save_income(request):
@@ -45,11 +41,33 @@ def save_income(request):
         incomeType = form.cleaned_data['incomeType']
         is_cash = form.cleaned_data['is_cash']
         owner = form.cleaned_data['owner']
-        if not owner:
-            owner = request.user
-        Income(incomeType=incomeType,
-                 money=money,
-                 comment=comment,
-                 date=date,
-                 owner=owner,
-                 is_cash=is_cash).save()
+        Income(
+            incomeType=incomeType,
+            money=money,
+            comment=comment,
+            date=date,
+            owner=owner
+        ).save()
+
+
+def initial_from_object(pk):
+    i = Income.objects.get(pk)
+    return {
+        'date':         i.date.strftime('%d-%m-%y'),
+        'money':        i.money,
+        'comment':      i.comment,
+        'owner':        i.owner,
+        'incomeType':   i.incomeType,
+    }
+
+
+def generate_initial(user):
+    return {
+        'date':         d.today().strftime('%d-%m-%y'),
+        'owner':        user
+        'incomeType':   IncomeType.objects.filter(
+            incometype__owner__eq=user,
+            incometype__is_default=True
+            ).name,
+    }
+

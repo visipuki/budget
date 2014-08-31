@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, url
 
-from costs import views
+from spending import views
 
 urlpatterns = patterns('',
                        url(r'^$', views.spendingView),
