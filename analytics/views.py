@@ -58,6 +58,8 @@ def cost_by_type(start, end):
             spending__date__lte=end
         ).annotate(total=Sum('spending__money'))
     }
+    if not cost_dict:
+        cost_dict = {sp_t.name: 0 for sp_t in Sp_t.objects.all()}
     return cost_dict
 
 

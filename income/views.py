@@ -3,7 +3,9 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from income.models import Income
 from income.forms import IncomeForm
+from income.models import IncomeType
 from datetime import date as d
+from account.models import Account
 
 
 @login_required
@@ -18,10 +20,9 @@ def incomeView(request, *args):
         else:
             initial_form_values = generate_initial(user)
         form = IncomeForm(initial=initial_form_values)
-        l = Income.objects.order_by('-modified')[:5]
-        latest_income_list = l[::-1]
+        latest_income_list = Income.objects.order_by('-modified')[:5]
         context = {
-            'latest_income_list': latest_income_list,
+            'latest_income_list': latest_income_list[::-1],
             'form': form,
             'username': user
         }
@@ -38,20 +39,30 @@ def save_income(request):
         date = form.cleaned_data['date']
         money = form.cleaned_data['money']
         comment = form.cleaned_data['comment']
-        incomeType = form.cleaned_data['incomeType']
-        is_cash = form.cleaned_data['is_cash']
         owner = form.cleaned_data['owner']
+        incomeType = form.cleaned_data['incomeType']
         Income(
-            incomeType=incomeType,
+            date=date,
             money=money,
             comment=comment,
-            date=date,
-            owner=owner
+            owner=owner,
+            incomeType=incomeType
         ).save()
+        change_account(incomeType, money)
+
+
+def change_account(incomeType, spending):
+    if not Account.objects.filter(accountType=incomeType):
+        a = Account(accountType=incomeType, money = -spending)
+    else:
+        a = Account.objects.get(accountType=incomeType)
+        a.money -= spending
+    a.save()
 
 
 def initial_from_object(pk):
-    i = Income.objects.get(pk)
+    # получаем начальные данные для формы из объекта
+    i = Income.objects.get(pk=pk)
     return {
         'date':         i.date.strftime('%d-%m-%y'),
         'money':        i.money,
@@ -62,12 +73,12 @@ def initial_from_object(pk):
 
 
 def generate_initial(user):
+    # создает словарь начальных данных для формы
     return {
         'date':         d.today().strftime('%d-%m-%y'),
-        'owner':        user
+        'owner':        user,
         'incomeType':   IncomeType.objects.filter(
-            incometype__owner__eq=user,
-            incometype__is_default=True
-            ).name,
+            owner=user,
+            is_income_default=True
+            )[0]
     }
-

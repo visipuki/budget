@@ -5,6 +5,7 @@ from spending.models import Spending
 from spending.forms import SpendingForm
 from income.models import IncomeType
 from datetime import date as d
+from account.models import Account
 
 
 @login_required
@@ -43,11 +44,18 @@ def save_spending(request):
                  comment=comment,
                  date=date,
                  owner=owner,
-                 incomeType=incomeType).save()
+                 incomeType=incomeType
+                 ).save()
+
+
+def change_account(incomeType, income):
+    a = Account.objects.get(accounttype__eq=incomeType)
+    a.money += income
+    a.save()
 
 
 def initial_from_spending_object(pk):
-    i = Spending.objects.get(pk)
+    i = Spending.objects.get(pk=pk)
     initial = {
         'date':         i.date.strftime('%d-%m-%y'),
         'money':        i.money,
@@ -63,9 +71,9 @@ def generate_initial(user):
     initial = {
         'date':         d.today().strftime('%d-%m-%y'),
         'incomeType':   IncomeType.objects.filter(
-            incometype__owner__eq=user,
-            incometype__is_default=True
-            ).name,
+            owner=user,
+            is_cost_default=True
+            )[0],
         'owner':        user
     }
     return initial

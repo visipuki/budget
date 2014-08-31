@@ -33,5 +33,5 @@ class IncomeForm(forms.Form):
     incomeType = forms.ModelChoiceField(
         queryset=IncomeType.objects.all(),
         required=True,
-        label='тип*'
+        label='тип'
     )
