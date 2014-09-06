@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from income.models import IncomeType
+from account.models import Account
 
 
 class IncomeForm(forms.Form):
@@ -31,7 +31,7 @@ class IncomeForm(forms.Form):
         label='автор'
     )
     incomeType = forms.ModelChoiceField(
-        queryset=IncomeType.objects.all(),
+        queryset=Account.objects.all(),
         required=True,
         label='тип'
     )

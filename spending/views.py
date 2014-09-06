@@ -3,9 +3,8 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from spending.models import Spending
 from spending.forms import SpendingForm
-from income.models import IncomeType
-from datetime import date as d
 from account.models import Account
+from datetime import date as d
 
 
 @login_required
@@ -22,9 +21,12 @@ def spendingView(request, *args):
         form = SpendingForm(initial=initial_form_values)
         l = Spending.objects.order_by('-modified')[:5]
         l = l[::-1]
-        context = {'latest_spending_list': l,
-                   'form': form,
-                   'username': user}
+        account_list = Account.objects.all()
+        context = {
+            'account_list': account_list,
+            'latest_spending_list': l,
+            'form': form,
+            'username': user}
         return render(request,
                       'spending/index.html',
                       context)
@@ -46,11 +48,12 @@ def save_spending(request):
                  owner=owner,
                  incomeType=incomeType
                  ).save()
+        change_account(incomeType, money)
 
 
-def change_account(incomeType, income):
-    a = Account.objects.get(accounttype__eq=incomeType)
-    a.money += income
+def change_account(account, spending):
+    a = account
+    a.money -= spending
     a.save()
 
 
@@ -70,7 +73,7 @@ def initial_from_spending_object(pk):
 def generate_initial(user):
     initial = {
         'date':         d.today().strftime('%d-%m-%y'),
-        'incomeType':   IncomeType.objects.filter(
+        'incomeType':   Account.objects.filter(
             owner=user,
             is_cost_default=True
             )[0],

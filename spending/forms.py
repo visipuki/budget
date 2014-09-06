@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from spending.models import SpendingType
-from income.models import IncomeType
+from account.models import Account
 
 
 class SpendingForm(forms.Form):
@@ -33,7 +33,7 @@ class SpendingForm(forms.Form):
         label='тип траты*'
     )
     incomeType = forms.ModelChoiceField(
-        queryset=IncomeType.objects.all(),
+        queryset=Account.objects.all(),
         required=True,
         label='источник денег'
     )

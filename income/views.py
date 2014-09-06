@@ -3,7 +3,6 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from income.models import Income
 from income.forms import IncomeForm
-from income.models import IncomeType
 from datetime import date as d
 from account.models import Account
 
@@ -20,8 +19,10 @@ def incomeView(request, *args):
         else:
             initial_form_values = generate_initial(user)
         form = IncomeForm(initial=initial_form_values)
+        account_list = Account.objects.all()
         latest_income_list = Income.objects.order_by('-modified')[:5]
         context = {
+            'account_list': account_list,
             'latest_income_list': latest_income_list[::-1],
             'form': form,
             'username': user
@@ -51,12 +52,9 @@ def save_income(request):
         change_account(incomeType, money)
 
 
-def change_account(incomeType, spending):
-    if not Account.objects.filter(accountType=incomeType):
-        a = Account(accountType=incomeType, money = -spending)
-    else:
-        a = Account.objects.get(accountType=incomeType)
-        a.money -= spending
+def change_account(account, income):
+    a = account
+    a.money += income
     a.save()
 
 
@@ -77,7 +75,7 @@ def generate_initial(user):
     return {
         'date':         d.today().strftime('%d-%m-%y'),
         'owner':        user,
-        'incomeType':   IncomeType.objects.filter(
+        'incomeType':   Account.objects.filter(
             owner=user,
             is_income_default=True
             )[0]

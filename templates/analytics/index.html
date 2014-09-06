@@ -4,14 +4,18 @@
 {{ form.as_p }}
 <input type="submit" value="Обновить" />
 </form>
-<ul>Сумма трат по типам
-{% for type, tot in totals.items %}
-  <li>{{type}} = {{tot}} руб.</li>
-{% endfor %}
-</ul>
-<ul>Процентное соотношение трат по типам
-{% for type, perc in relation.items %}
-  <li>{{type}} = {{perc}} %</li>
-{% endfor %}
-</ul>
+{% if totals %}
+  <ul>Сумма трат по типам
+  {% for type, tot in totals.items %}
+    <li>{{type}} = {{tot}} руб.</li>
+  {% endfor %}
+  </ul>
+  <ul>Процентное соотношение трат по типам
+  {% for type, perc in relation.items %}
+    <li>{{type}} = {{perc}} %</li>
+  {% endfor %}
+  </ul>
+{% else %}
+  <p>За указанный период трат нет</p>
+{% endif %}
 {% endblock %}

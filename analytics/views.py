@@ -58,8 +58,6 @@ def cost_by_type(start, end):
             spending__date__lte=end
         ).annotate(total=Sum('spending__money'))
     }
-    if not cost_dict:
-        cost_dict = {sp_t.name: 0 for sp_t in Sp_t.objects.all()}
     return cost_dict
 
 
@@ -71,8 +69,5 @@ def cost_relation(cost_by_type):
             for key, val in cost_by_type.items()
         }
     else:
-        relation = {
-            key: round(100/len(cost_by_type))
-            for key in cost_by_type.keys()
-        }
+        relation = {}
     return relation

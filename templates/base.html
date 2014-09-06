@@ -4,6 +4,16 @@
 </head>
 <body>
 <a href='/accounts/logout/?next=/{% block logout %}{% endblock %}'>Выйти</a>({{ username }})
+<table>
+  {% for a in account_list %}
+  <th>{{ a.name }}</th>
+  {% endfor %}
+  <tr>
+    {% for a in account_list %}
+      <td>{{ a.money }}</td>
+    {% endfor %}
+  </tr>
+</table>
 <div>
   <a href='/'>Траты</a> |
   <a href='/income/'>Доходы</a> |

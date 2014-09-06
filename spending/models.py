@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from income.models import IncomeType
+from account.models import Account
 
 
 class SpendingType(models.Model):
@@ -17,7 +17,7 @@ class Spending(models.Model):
     modified = models.DateTimeField(auto_now=True)
     owner = models.ForeignKey(User)
     comment = models.CharField(max_length=32)
-    incomeType = models.ForeignKey(IncomeType)
+    incomeType = models.ForeignKey(Account)
 
     def __str__(self):
         return r'{} / {} / {} / {} руб.'.format(
