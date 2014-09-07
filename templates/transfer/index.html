@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+{% if latest_transfer_list %}
+  <ul>
+  {% for transfer in latest_transfer_list %}
+    <li><a href='/transfer/{{ transfer.pk }}/'>{{ transfer }}</a></li>
+  {% endfor %}
+  </ul>
+{% else %}
+  <p>Нет записей</p>
+{% endif %}
+<form method="post">{% csrf_token %}
+{{ form.as_p }}
+<input type="submit" value="Сохранить" />
+</form>
+{% endblock %}
