@@ -7,7 +7,7 @@ class SpendingType(models.Model):
     name = models.CharField(max_length=16, unique=True)
 
     class Meta:
-        db_table = 'Ти'
+        db_table = 'Тип траты'
 
     def __str__(self):
         return self.name
