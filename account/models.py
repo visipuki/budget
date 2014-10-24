@@ -8,6 +8,9 @@ class Account(models.Model):
     is_cost_default = models.BooleanField()
     is_income_default = models.BooleanField()
     owner = models.ForeignKey(User)
+    class Meta:
+        verbose_name = 'Кошелек'
+        verbose_name_plural = 'Кошельки'
 
     def __str__(self):
         return self.name
