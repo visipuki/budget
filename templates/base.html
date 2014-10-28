@@ -1,9 +1,11 @@
+<!DOCTYPE html>
 <html>
 <head>
-{% block title %}{% endblock %}
+  <link href="/static/style.css" rel="stylesheet">
+  {% block title %}{% endblock %}
 </head>
 <body>
-<a href='/accounts/logout/?next=/{% block logout %}{% endblock %}'>Выйти</a>({{ username }})
+<header>
 <table>
   {% for a in account_list %}
   <th>{{ a.name }}</th>
@@ -14,13 +16,21 @@
     {% endfor %}
   </tr>
 </table>
-<div>
-  <a href='/'>Траты</a> |
-  <a href='/income/'>Доходы</a> |
-  <a href='/transfer/'>Переводы</a> |
-  <a href='/analytics/'>Анализ расходов</a> |
-  <a href='/admin/'>Admin</a>
+<div id="navigation">
+  <div id="menu">
+    <a href='/'>Траты</a>
+    <a href='/income/'>Доходы</a>
+    <a href='/transfer/'>Переводы</a>
+    <a href='/analytics/'>Анализ расходов</a>
+    <a href='/admin/'>Admin</a>
+  </div>
+  <div id="logout">
+    <a href='/accounts/logout/?next=/{% block logout %}{% endblock %}'>Выйти</a>({{ username }})
+  </div>
 </div>
-{% block content %}{% endblock %}
+</header>
+<div id="content">
+  {% block content %}{% endblock %}
+</div>
 </body>
 </html>

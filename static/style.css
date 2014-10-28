@@ -1,0 +1,92 @@
+body {
+  background: #F5FFEB;
+}
+header {
+  text-align: center;
+  color: #003300;
+  background: #757547;
+}
+a {
+  color: #7A995C;
+}
+table {
+  width: 100%;
+  margin-top: 0;
+  margin-right: auto;
+  margin-bottom: 0px;
+  margin-left: auto;
+  border-collapse: collapse;
+}
+table, th, td {
+  border: 1px solid #3D3D1F;
+}
+th {
+  background: #474724;
+  padding: 5px;
+  color: #E0E0D6;
+}
+td {
+  background: #B2B299;
+  padding: 15px;
+  font-size: 1.5em;
+}
+td, th {
+  text-align: center;
+}
+#navigation {
+  clear: both;
+  background: #29331F;
+  padding: 1em 0px 2.125em 0px;
+  font-family: "Trebuchet MS", sans-serif;
+  font-size: 0.875em;
+  color: #FFCC00;
+}
+#menu {
+  float: left;
+  width: 90%;
+  text-align: left;
+}
+#menu a {
+  color: #FFCC00;
+  padding: 1em 10px 1em 10px;
+  text-decoration: none;
+}
+#menu a:hover {
+  color: white;
+  background: #007A00;
+}
+#logout {
+  float: right;
+  width: 10%;
+  text-align: right;
+}
+#logout a {
+  color: #FF8533;
+}
+
+#content {
+  clear: both;
+  background: #F5FFEB;
+  color: #3D4C2E;
+  text-align: center;
+}
+#content ul {
+  padding: 20px 0px;
+  list-style-type: none;
+}
+#content li {
+  display: block;
+}
+#content li a { 
+  display: block;
+  color: #7A995C;
+  padding: 10px 0px;
+  text-decoration: none;
+}
+#content li a:hover { 
+  color: #52663D;
+  font-weight: bold;
+  background: #D1FFA3;
+  padding: 10px 0px;
+  text-decoration: none;
+}
