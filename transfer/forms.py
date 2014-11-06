@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from account.models import Account
+from spending.forms import CalendarWidget
 
 
 class TransferForm(forms.Form):
@@ -11,7 +12,8 @@ class TransferForm(forms.Form):
                                           '%d/%m/%y',
                                           '%d/%m/%Y',
                                           '%d.%m.%y',
-                                          '%d.%m.%Y'])
+                                          '%d.%m.%Y'],
+                           widget=CalendarWidget())
     money = forms.IntegerField(
         label ='Сумма*',
         required=True

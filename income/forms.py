@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from account.models import Account
+from spending.forms import CalendarWidget
 
 
 class IncomeForm(forms.Form):
@@ -14,7 +15,8 @@ class IncomeForm(forms.Form):
             '%d/%m/%Y',
             '%d.%m.%y',
             '%d.%m.%Y'
-        ]
+        ],
+        widget=CalendarWidget()
     )
     money = forms.IntegerField(
         label ='Доход*',

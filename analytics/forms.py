@@ -1,5 +1,6 @@
 from django import forms
 from spending.models import SpendingType
+from spending.forms import CalendarWidget
 
 
 class DateRangeForm(forms.Form):
@@ -10,7 +11,8 @@ class DateRangeForm(forms.Form):
                                                '%d/%m/%y',
                                                '%d/%m/%Y',
                                                '%d.%m.%y',
-                                               '%d.%m.%Y'])
+                                               '%d.%m.%Y'],
+                                widget=CalendarWidget())
     endDate = forms.DateField(required=True,
                                 label='по',
                                 input_formats=['%d-%m-%Y',
@@ -18,4 +20,5 @@ class DateRangeForm(forms.Form):
                                                '%d/%m/%y',
                                                '%d/%m/%Y',
                                                '%d.%m.%y',
-                                               '%d.%m.%Y'])
+                                               '%d.%m.%Y'],
+                                widget=CalendarWidget())

@@ -1,0 +1,132 @@
+body {
+  background: #F5FFEB;
+}
+header {
+  text-align: center;
+  color: #003300;
+  background: #F5FFEB;
+}
+table {
+  width: 100%;
+  margin-top: 0;
+  margin-right: auto;
+  margin-bottom: 0.5em;
+  margin-left: auto;
+  border-collapse: collapse;
+}
+table, th, td {
+  border: 1px solid #338033;
+}
+th {
+  background: #338033;
+  padding: 5px;
+  color: #E0E0D6;
+}
+td {
+  background: #CCCCB2;
+  padding: 15px;
+}
+td, th {
+  text-align: center;
+}
+#navigation {
+  width: 100%;
+  height: 3.175em;
+  background: #29331F;
+  font-family: "Trebuchet MS", sans-serif;
+  color: #FFCC00;
+  position: relative;
+}
+#menu {
+  position: absolute;
+  top: 1em;
+  left: 0;
+  text-align: left;
+}
+#menu a {
+  color: #FFCC00;
+  padding: 1em 10px 1em 10px;
+  text-decoration: none;
+}
+#menu a:hover {
+  color: white;
+  background: #007A00;
+}
+#logout {
+  position: absolute;
+  text-align: right;
+  top: 1em;
+  right: 0;
+  padding: 0 10px 0 0 ;
+}
+#logout a {
+  color: #FF8533;
+}
+#logout a:hover {
+  color: #E62E00;
+}
+
+#content {
+  clear: both;
+  background: #F5FFEB;
+  color: #3D4C2E;
+  text-align: center;
+}
+#content ul {
+  list-style-type: none;
+}
+#content li {
+  display: block;
+}
+#content li a { 
+  display: block;
+  color: #7A995C;
+  text-decoration: none;
+}
+#content li a:hover { 
+  color: #52663D;
+  font-weight: bold;
+  background: #D1FFA3;
+}
+#content input, select {
+  font-size: 1em;
+}
+#content input[type="submit"] {
+  background: #5C5C3D;
+  color: #F5F5F0;
+  font-weight: bold;
+  width: 10em;
+  height: 50px;
+  border: 2px solid #B8B894;
+  border-radius: 15px;
+  margin: 1em 0 0 0;
+  text-shadow: 1px 1px 1px #B2B299;
+  box-shadow: 0px 10px 14px -7px #1F1F0F;
+}
+#content input[type="submit"]:hover {
+  
+}
+#content input[type="submit"]:active {
+  position:relative;
+  top:1px;
+}
+@media screen and (max-width: 1000px) {
+  td {
+    font-size: 2em;
+  }
+  th {
+    font-size: 1.5em;
+  }
+  #navigation {
+  font-size: 1.5em;
+  }
+  #content {
+    font-size: 2em;
+  }
+  #content ul {
+    padding: 20px 0px;
+  }
+  #content li a { 
+    padding: 10px 0px;
+  }
+}
