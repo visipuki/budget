@@ -5,12 +5,12 @@
 <input type="submit" value="Обновить" />
 </form>
 {% if totals %}
-  <ul>Сумма трат по типам
+  <ul><h4>Сумма трат по типам за указанный период</h4>
   {% for type, tot in totals.items %}
     <li>{{type}} = {{tot}} руб.</li>
   {% endfor %}
   </ul>
-  <ul>Процентное соотношение трат по типам
+  <ul><h4>Процентное соотношение трат по типам за указанный период</h4>
   {% for type, perc in relation.items %}
     <li>{{type}} = {{perc}} %</li>
   {% endfor %}
