@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect
 from analytics.forms import DateRangeForm
 from datetime import date
 from datetime import datetime
+from calendar import monthrange
 from spending.models import SpendingType as Sp_t
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
@@ -25,7 +26,12 @@ def analyticsView(request, *args):
     else:
         if not args:
             end = date.today()
-            start = end.replace(month=end.month-1)
+            if end.day == monthrange(end.year, end.month)[1]:
+                start = end.replace(day=1)
+            elif end.day+1 > monthrange(end.year, end.month-1)[1]:
+                start = end.replace(day=1)
+            else:
+                start = end.replace(month=end.month-1, day=end.day+1)
             end_str = end.strftime('%d-%m-%Y')
             start_str = start.strftime('%d-%m-%Y')
         else:
