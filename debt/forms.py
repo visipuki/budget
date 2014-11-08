@@ -5,12 +5,11 @@ from spending.models import SpendingType
 
 class DebtForm(forms.Form):
     name = forms.CharField(
-        max_length=32, required=True,
+        max_length=32,
         label='Имя планируемой траты*'
     )
     money = forms.IntegerField(
         label ='Расход*',
-        required=True
     )
     owner = forms.ModelChoiceField(
         queryset=User.objects.all(),
@@ -20,18 +19,21 @@ class DebtForm(forms.Form):
     )
     spendingType = forms.ModelChoiceField(
         queryset=SpendingType.objects.all(),
-        required=True,
-        label='Тип траты*'
+        empty_label=None,
+        required=False,
+        label='Тип траты'
     )
     comment = forms.CharField(
-        max_length=32, required=False,
+        max_length=32,
+        required=False,
         label='Комментарий'
     )
     PERIOD_CHOICES = (
-        (None, 'разовая трата'),
-        ('m', 'ежемесячно'),
+        ('', 'разовая трата'),
+        ('m', 'ежемесячная трата'),
     )
     periodic = forms.ChoiceField(
         label='Периодичность',
         choices=PERIOD_CHOICES,
+        required=False,
     )

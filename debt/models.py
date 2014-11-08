@@ -11,17 +11,21 @@ class Debt(models.Model):
     comment = models.CharField(max_length=32)
     modified = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        verbose_name = 'Планируемая трата'
+        verbose_name_plural = 'Планируемые траты'
+
     def __str__(self):
-        return r'{} / {} / {} / {} руб. / {}'.format(
+        return r'{} / {} руб. / {} / {} / {}'.format(
             self.name,
+            self.money,
             self.owner,
             self.spendingType,
-            self.money,
             self.comment,
         )
 
 
-class PeriodicalDebt(models.Model):
+class PeriodicDebt(models.Model):
     PERIOD_CHOICES = (
         ('y', 'Год'),
         ('m', 'Месяц'),
@@ -40,5 +44,14 @@ class PeriodicalDebt(models.Model):
     last_generation_date = models.DateField()
 
     class Meta:
-        verbose_name = 'Автоматический долг'
-        verbose_name_plural = 'Автоматические долги'
+        verbose_name = 'Автоматическая трата'
+        verbose_name_plural = 'Автоматические траты'
+
+    def __str__(self):
+        return r'{} / {} руб. / {} / {} / {}'.format(
+            self.name,
+            self.money,
+            self.owner,
+            self.spendingType,
+            self.last_generation_date,
+        )

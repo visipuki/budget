@@ -6,7 +6,6 @@ from spending.forms import CalendarWidget
 
 class IncomeForm(forms.Form):
     date = forms.DateField(
-        required=True,
         label='Дата',
         input_formats=[
             '%d-%m-%Y',
@@ -20,10 +19,10 @@ class IncomeForm(forms.Form):
     )
     money = forms.IntegerField(
         label ='Доход*',
-        required=True
     )
     comment = forms.CharField(
-        max_length=32, required=False,
+        max_length=32,
+        required=False,
         label='комментарий'
     )
     owner = forms.ModelChoiceField(
@@ -34,6 +33,6 @@ class IncomeForm(forms.Form):
     )
     incomeType = forms.ModelChoiceField(
         queryset=Account.objects.all(),
-        required=True,
+        required=False,
         label='тип'
     )

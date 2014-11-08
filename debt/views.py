@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
-from debt.models import Debt, PeriodicalDebt
+from spending.models import SpendingType
+from debt.models import Debt, PeriodicDebt
 from account.models import Account
 from debt.forms import DebtForm
 from datetime import date as d
@@ -52,13 +53,13 @@ def save_debt(request):
             comment=comment,
         ).save()
         if periodic:
-            PeriodicalDebt(
+            PeriodicDebt(
+                period=periodic,
                 name=name,
                 money=money,
                 owner=owner,
                 spendingType=spendingType,
                 last_generation_date=d.today(),
-                period=periodic,
             ).save()
 
 
@@ -76,6 +77,7 @@ def initial_from_debt_object(pk):
 
 def generate_initial(user):
     initial = {
-        'owner': user
+        'owner': user,
+        'spendingType': SpendingType.objects.get(name='прочее'),
     }
     return initial
