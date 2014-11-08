@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-{% block spending_tab %}class="tab_backlight" {% endblock %}
+{% block debt_tab %}class="tab_backlight" {% endblock %}
 {% block content %}
-{% if latest_spending_list %}
+{% if debt_list %}
   <ul>
-  {% for spending in latest_spending_list %}
-     <li><a href='/{{ spending.pk }}/'>{{ spending }}</a></li>
+  {% for debt in debt_list %}
+    <li><a href='/debt/{{ debt.pk }}/'>{{ debt }}</a></li>
   {% endfor %}
   </ul>
 {% else %}

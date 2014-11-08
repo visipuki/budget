@@ -19,11 +19,12 @@
 </table>
 <div id="navigation">
   <div id="menu">
-    <a href='/'>Траты</a>
-    <a href='/income/'>Доходы</a>
-    <a href='/transfer/'>Переводы</a>
-    <a href='/analytics/'>Анализ расходов</a>
-    <a href='/admin/'>Admin</a>
+    <a {% block spending_tab %}{% endblock %}href='/'>Траты</a
+    ><a {% block income_tab %}{% endblock %}href='/income/'>Доходы</a
+    ><a {% block transfer_tab %}{% endblock %}href='/transfer/'>Переводы</a
+    ><a {% block analize_tab %}{% endblock %}href='/analytics/'>Анализ</a
+    ><a {% block debt_tab %}{% endblock %}href='/debt/'>Долги</a
+    ><a href='/admin/'>Admin</a>
   </div>
   <div id="logout">
     <a href='/accounts/logout/?next=/{% block logout %}{% endblock %}'>Выйти</a>({{ username }})
