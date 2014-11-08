@@ -30,7 +30,7 @@ class DebtForm(forms.Form):
     PERIOD_CHOICES = (
         ('m', 'ежемесячно'),
     )
-    periodical = forms.ChoiceField(
+    periodic = forms.ChoiceField(
         empty_label='Разовый',
         label='Периодичность',
     )
