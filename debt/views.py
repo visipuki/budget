@@ -65,12 +65,11 @@ def save_debt(request):
 def initial_from_debt_object(pk):
     i = Debt.objects.get(pk=pk)
     initial = {
-        'date':         i.date.strftime('%d-%m-%y'),
+        'name':         i.name,
         'money':        i.money,
-        'comment':      i.comment,
         'owner':        i.owner,
         'spendingType': i.spendingType,
-        'incomeType':   i.incomeType
+        'comment':      i.comment,
     }
     return initial
 

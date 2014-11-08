@@ -1,5 +1,5 @@
 from django.db import models
-from django.spending.models import SpendingType
+from spending.models import SpendingType
 from django.contrib.auth.models import User
 
 
