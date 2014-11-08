@@ -13,6 +13,7 @@ urlpatterns = patterns('',
                        url(r'^analytics/', include('analytics.urls')),
                        url(r'^income/', include('income.urls')),
                        url(r'^transfer/', include('transfer.urls')),
+                       url(r'^debt/', include('debt.urls')),
                        url(r'^accounts/login/$', auth_views.login),
                        url(r'^accounts/logout/$', auth_views.logout_then_login),
 )

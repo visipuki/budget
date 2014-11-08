@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = '+o1gdu&=qc)!2ydx1f*mp*&bk=lu83h#3rzb+018&eh^&(1)1u'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 TEMPLATE_DEBUG = False
 TEMPLATE_DIRS = (os.path.join(BASE_DIR, 'templates'))
@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'income',
     'account',
     'transfer',
+    'debt',
 )
 
 MIDDLEWARE_CLASSES = (
