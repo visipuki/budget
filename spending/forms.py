@@ -9,12 +9,11 @@ class CalendarWidget(forms.TextInput):
         css = {
             'all': ('/static/css/pickmeup.min.css',),
         }
-        js = ('/static/js/jquery.js',
-              '/static/js/jquery.pickmeup.min.js',
+        js = ('/static/js/jquery.pickmeup.min.js',
               '/static/js/date.input.js')
     def __init__(self):
         super().__init__({'class': 'date'})
-        
+
 
 
 class SpendingForm(forms.Form):
