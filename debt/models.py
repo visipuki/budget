@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 
 class Debt(models.Model):
-    name = models.CharField(max_length=32)
+    name = models.CharField(max_length=32, unique=True)
     money = models.IntegerField()
     owner = models.ForeignKey(User)
     spendingType = models.ForeignKey(SpendingType)
@@ -55,3 +55,8 @@ class PeriodicDebt(models.Model):
             self.spendingType,
             self.last_generation_date,
         )
+
+
+class DebtAccount(models.Model):
+    name = models.CharField(max_length=32)
+    money = models.IntegerField()
