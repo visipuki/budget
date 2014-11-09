@@ -29,6 +29,9 @@ td {
 td, th {
   text-align: center;
 }
+.attention {
+  background: pink;
+}
 #navigation {
   width: 100%;
   height: 3.175em;
