@@ -44,8 +44,8 @@ class PeriodicDebt(models.Model):
     last_generation_date = models.DateField()
 
     class Meta:
-        verbose_name = 'Автоматическая трата'
-        verbose_name_plural = 'Автоматические траты'
+        verbose_name = 'Периодическая трата'
+        verbose_name_plural = 'Периодические траты'
 
     def __str__(self):
         return r'{} / {} руб. / {} / {} / {}'.format(
