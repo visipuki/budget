@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from spending.models import Spending
 from spending.forms import SpendingForm
 from account.models import Account
+from debt.models import DebtAccount
 from datetime import date as d
 
 
@@ -21,7 +22,8 @@ def spendingView(request, *args):
         form = SpendingForm(initial=initial_form_values)
         l = Spending.objects.order_by('-modified')[:5]
         l = l[::-1]
-        account_list = Account.objects.all()
+        account_list = list(Account.objects.all())\
+            + list(DebtAccount.objects.all())
         context = {
             'account_list': account_list,
             'latest_spending_list': l,

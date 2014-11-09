@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from income.models import Income
 from income.forms import IncomeForm
+from debt.models import DebtAccount
 from datetime import date as d
 from account.models import Account
 
@@ -19,7 +20,8 @@ def incomeView(request, *args):
         else:
             initial_form_values = generate_initial(user)
         form = IncomeForm(initial=initial_form_values)
-        account_list = Account.objects.all()
+        account_list = list(Account.objects.all())\
+            + list(DebtAccount.objects.all())
         latest_income_list = Income.objects.order_by('-modified')[:5]
         context = {
             'account_list': account_list,

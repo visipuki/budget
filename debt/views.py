@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from spending.models import SpendingType
-from debt.models import Debt, PeriodicDebt
+from debt.models import Debt, PeriodicDebt, DebtAccount
 from account.models import Account
 from debt.forms import DebtForm
 from datetime import date as d
@@ -22,7 +22,8 @@ def debtView(request, *args):
         form = DebtForm(initial=initial_form_values)
         l = Debt.objects.order_by('-modified')
         l = l[::-1]
-        account_list = Account.objects.all()
+        account_list = list(Account.objects.all())\
+            + list(DebtAccount.objects.all())
         context = {
             'account_list': account_list,
             'debt_list': l,
@@ -51,6 +52,19 @@ def save_debt(request):
             owner=owner,
             spendingType=spendingType,
             comment=comment,
+        ).save()
+        if not DebtAccount.objects.count():
+            DebtAccount(
+                id=1,
+                name='Долги',
+                money=0
+            ).save()
+        total = DebtAccount.objects.get(pk=1).money
+        total -= money
+        DebtAccount(
+            id=1,
+            name='Долги',
+            money=total
         ).save()
         if periodic:
             PeriodicDebt(
