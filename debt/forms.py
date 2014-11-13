@@ -9,7 +9,7 @@ class DebtForm(forms.Form):
         label='Имя планируемой траты*'
     )
     money = forms.IntegerField(
-        label ='Расход*',
+        label ='сумма*',
     )
     owner = forms.ModelChoiceField(
         queryset=User.objects.all(),
