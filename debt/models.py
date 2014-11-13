@@ -4,12 +4,13 @@ from django.contrib.auth.models import User
 
 
 class Debt(models.Model):
-    name = models.CharField(max_length=32, unique=True)
+    name = models.CharField(max_length=32)
     money = models.IntegerField()
     owner = models.ForeignKey(User)
     spendingType = models.ForeignKey(SpendingType)
     comment = models.CharField(max_length=32)
     modified = models.DateTimeField(auto_now=True)
+    periodicDebt = models.ForeignKey('PeriodicDebt', blank=True, null=True)
 
     class Meta:
         verbose_name = 'Планируемая трата'

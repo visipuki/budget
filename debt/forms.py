@@ -10,6 +10,7 @@ class DebtForm(forms.Form):
     )
     money = forms.IntegerField(
         label ='сумма*',
+        min_value = 1
     )
     owner = forms.ModelChoiceField(
         queryset=User.objects.all(),

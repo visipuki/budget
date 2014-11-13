@@ -11,7 +11,10 @@ from datetime import date as d
 @login_required
 def debtView(request, *args):
     if request.method == 'POST':
-        save_debt(request)
+        if args:
+            update_old_debt(request, pk=args[0])
+        else:
+            save_new_debt(request)
         return HttpResponseRedirect('/debt/')
     else:
         user = request.user
@@ -37,7 +40,7 @@ def debtView(request, *args):
         )
 
 
-def save_debt(request):
+def save_new_debt(request):
     form = DebtForm(request.POST)
     if form.is_valid():
         name = form.cleaned_data['name']
@@ -46,13 +49,34 @@ def save_debt(request):
         spendingType = form.cleaned_data['spendingType']
         comment = form.cleaned_data['comment']
         periodic = form.cleaned_data['periodic']
-        Debt(
-            name=name,
-            money=money,
-            owner=owner,
-            spendingType=spendingType,
-            comment=comment,
-        ).save()
+
+        if periodic:
+            p = PeriodicDebt(
+                period=periodic,
+                name=name,
+                money=money,
+                owner=owner,
+                spendingType=spendingType,
+                last_generation_date=d.today(),
+            )
+            p.save()
+            Debt(
+                name=name,
+                money=money,
+                owner=owner,
+                spendingType=spendingType,
+                comment=comment,
+                periodicDebt=p
+            ).save()
+        else:
+            Debt(
+                name=name,
+                money=money,
+                owner=owner,
+                spendingType=spendingType,
+                comment=comment,
+            ).save()
+
         if not DebtAccount.objects.count():
             DebtAccount(
                 id=1,
@@ -66,15 +90,57 @@ def save_debt(request):
             name='Долги',
             money=total
         ).save()
+
+
+def update_old_debt(request, pk):
+    form = DebtForm(request.POST)
+    if form.is_valid():
+        name = form.cleaned_data['name']
+        money = form.cleaned_data['money']
+        owner = form.cleaned_data['owner']
+        spendingType = form.cleaned_data['spendingType']
+        comment = form.cleaned_data['comment']
+        periodic = form.cleaned_data['periodic']
+
+        difference = money - Debt.objects.get(pk=pk).money
+
         if periodic:
-            PeriodicDebt(
+            p = PeriodicDebt(
+                id = PeriodicDebt.objects.get(debt__periodicDebt=pk).id,
                 period=periodic,
                 name=name,
                 money=money,
                 owner=owner,
                 spendingType=spendingType,
                 last_generation_date=d.today(),
+            )
+            p.save()
+            Debt(
+                id=pk,
+                name=name,
+                money=money,
+                owner=owner,
+                spendingType=spendingType,
+                comment=comment,
+                periodicDebt=p
             ).save()
+        else:
+            Debt(
+                id=pk,
+                name=name,
+                money=money,
+                owner=owner,
+                spendingType=spendingType,
+                comment=comment,
+            ).save()
+
+        total = DebtAccount.objects.get(pk=1).money
+        total -= difference
+        DebtAccount(
+            id=1,
+            name='Долги',
+            money=total
+        ).save()
 
 
 def initial_from_debt_object(pk):
@@ -86,6 +152,8 @@ def initial_from_debt_object(pk):
         'spendingType': i.spendingType,
         'comment':      i.comment,
     }
+    if not i.periodicDebt:
+        initial['periodic'] = 'm'
     return initial
 
 
