@@ -17,12 +17,19 @@ class Debt(models.Model):
         verbose_name_plural = 'Планируемые траты'
 
     def __str__(self):
-        return r'{} / {} руб. / {} / {} / {}'.format(
+        if self.is_periodic():
+            periodic_flag = PeriodicDebt.objects.get(
+                debt__id=self.id
+            ).get_period_display()
+        else:
+            periodic_flag = 'разовая'
+        return r'{} / {} руб. / {} / {} / {} / {}'.format(
             self.name,
             self.money,
             self.owner,
             self.spendingType,
             self.comment,
+            periodic_flag
         )
 
     def is_periodic(self):
@@ -31,10 +38,10 @@ class Debt(models.Model):
 
 class PeriodicDebt(models.Model):
     PERIOD_CHOICES = (
-        ('y', 'Год'),
-        ('m', 'Месяц'),
-        ('w', 'Неделя'),
-        ('d', 'День'),
+        ('y', 'раз в год'),
+        ('m', 'раз в месяц'),
+        ('w', 'раз в неделю'),
+        ('d', 'раз в день'),
     )
     period = models.CharField(
         max_length=1,
