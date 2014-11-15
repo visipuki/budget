@@ -7,12 +7,12 @@
 </form>
 {% if totals %}
   <ul><h4>Сумма трат по типам за указанный период</h4>
-  {% for type, tot in totals.items %}
+  {% for type, tot in totals%}
     <li>{{type}} = {{tot}} руб.</li>
   {% endfor %}
   </ul>
   <ul><h4>Процентное соотношение трат по типам за указанный период</h4>
-  {% for type, perc in relation.items %}
+  {% for type, perc in relation%}
     <li>{{type}} = {{perc}} %</li>
   {% endfor %}
   </ul>
