@@ -4,6 +4,7 @@ from analytics.forms import DateRangeForm
 from datetime import date
 from datetime import datetime
 from calendar import monthrange
+from operator import itemgetter
 from spending.models import SpendingType as Sp_t
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
@@ -57,23 +58,24 @@ def analyticsView(request, *args):
 
 def cost_by_type(start, end):
     # calculates total of spended money by type of spending
-    cost_dict = {
-        sp_t.name: sp_t.total
+    cost_list = [
+        (sp_t.name, sp_t.total)
         for sp_t in Sp_t.objects.filter(
             spending__date__gte=start,
             spending__date__lte=end
         ).annotate(total=Sum('spending__money'))
-    }
-    return cost_dict
+    ]
+    cost_list = sorted(cost_list, key=itemgetter(1), reverse=True)
+    return cost_list
 
 
 def cost_relation(cost_by_type):
-    summ = sum(cost_by_type.values())
+    summ = sum([i for _, i in cost_by_type])
     if summ:
-        relation = {
-            key: round(val*100/summ)
-            for key, val in cost_by_type.items()
-        }
+        relation = [
+            (key, round(val*100/summ))
+            for key, val in cost_by_type
+        ]
     else:
-        relation = {}
+        relation = []
     return relation
