@@ -5,7 +5,7 @@ from spending.models import SpendingType
 from debt.models import Debt, PeriodicDebt, DebtAccount
 from account.models import Account
 from debt.forms import DebtForm
-from datetime import date as d
+from datetime import date
 
 
 @login_required
@@ -57,25 +57,20 @@ def save_new_debt(request):
                 money=money,
                 owner=owner,
                 spendingType=spendingType,
-                last_generation_date=d.today(),
+                last_generation_date=date.today(),
             )
             p.save()
-            Debt(
-                name=name,
-                money=money,
-                owner=owner,
-                spendingType=spendingType,
-                comment=comment,
-                periodicDebt=p
-            ).save()
         else:
-            Debt(
-                name=name,
-                money=money,
-                owner=owner,
-                spendingType=spendingType,
-                comment=comment,
-            ).save()
+            p = None
+
+        Debt(
+            name=name,
+            money=money,
+            owner=owner,
+            spendingType=spendingType,
+            comment=comment,
+            periodicDebt=p
+        ).save()
 
         if not DebtAccount.objects.count():
             DebtAccount(
@@ -102,37 +97,39 @@ def update_old_debt(request, pk):
         comment = form.cleaned_data['comment']
         periodic = form.cleaned_data['periodic']
 
-        difference = money - Debt.objects.get(pk=pk).money
+        old_debt = Debt.objects.get(pk=pk)
+        difference = money - old_debt.money
 
         if periodic:
+            if old_debt.is_periodic():
+                periodic_debt_id = PeriodicDebt.objects.get(debt__id=pk).id
+            else:
+                periodic_debt_id = None
+
             p = PeriodicDebt(
-                id = PeriodicDebt.objects.get(debt__periodicDebt=pk).id,
+                id=periodic_debt_id,
                 period=periodic,
                 name=name,
                 money=money,
                 owner=owner,
                 spendingType=spendingType,
-                last_generation_date=d.today(),
+                last_generation_date=date.today(),
             )
             p.save()
-            Debt(
-                id=pk,
-                name=name,
-                money=money,
-                owner=owner,
-                spendingType=spendingType,
-                comment=comment,
-                periodicDebt=p
-            ).save()
         else:
-            Debt(
-                id=pk,
-                name=name,
-                money=money,
-                owner=owner,
-                spendingType=spendingType,
-                comment=comment,
-            ).save()
+            p = None
+            if Debt.objects.get(pk=pk).is_periodic():
+                PeriodicDebt.objects.get(debt__id=pk).delete()
+
+        Debt(
+            id=pk,
+            name=name,
+            money=money,
+            owner=owner,
+            spendingType=spendingType,
+            comment=comment,
+            periodicDebt=p
+        ).save()
 
         total = DebtAccount.objects.get(pk=1).money
         total -= difference
@@ -144,15 +141,15 @@ def update_old_debt(request, pk):
 
 
 def initial_from_debt_object(pk):
-    i = Debt.objects.get(pk=pk)
+    d = Debt.objects.get(pk=pk)
     initial = {
-        'name':         i.name,
-        'money':        i.money,
-        'owner':        i.owner,
-        'spendingType': i.spendingType,
-        'comment':      i.comment,
+        'name':         d.name,
+        'money':        d.money,
+        'owner':        d.owner,
+        'spendingType': d.spendingType,
+        'comment':      d.comment,
     }
-    if not i.periodicDebt:
+    if d.is_periodic():
         initial['periodic'] = 'm'
     return initial
 

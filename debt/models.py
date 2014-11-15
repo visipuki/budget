@@ -25,6 +25,9 @@ class Debt(models.Model):
             self.comment,
         )
 
+    def is_periodic(self):
+        return bool(self.periodicDebt)
+
 
 class PeriodicDebt(models.Model):
     PERIOD_CHOICES = (
