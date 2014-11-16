@@ -8,17 +8,22 @@ class Debt(models.Model):
     periodicDebt = models.ForeignKey('PeriodicDebt', blank=True, null=True)
 
     def __str__(self):
-        return r'{} / {} руб. / {} / {} / {}'.format(
-            self.staticDebt.name,
-            self.staticDebt.money,
-            self.staticDebt.owner,
-            self.staticDebt.spendingType,
-            self.staticDebt.comment,
-
+        if self.is_periodic():
+            periodic_flag = self.periodicDebt.get_period_display()
+        else:
+            periodic_flag = 'разовая'
+        return r'{} / {}'.format(
+            self.staticDebt,
+            periodic_flag,
         )
 
     def is_periodic(self):
         return bool(self.periodicDebt)
+
+    class Meta:
+
+        verbose_name = 'Планируемая трата'
+        verbose_name_plural = 'Планируемые траты'
 
 
 class StaticDebt(models.Model):
@@ -29,28 +34,14 @@ class StaticDebt(models.Model):
     comment = models.CharField(max_length=32)
     modified = models.DateTimeField(auto_now=True)
 
-    class Meta:
-        verbose_name = 'Планируемая трата'
-        verbose_name_plural = 'Планируемые траты'
-
     def __str__(self):
-        if self.is_periodic():
-            periodic_flag = PeriodicDebt.objects.get(
-                debt__id=self.id
-            ).get_period_display()
-        else:
-            periodic_flag = 'разовая'
-        return r'{} / {} руб. / {} / {} / {} / {}'.format(
+        return r'{} / {} руб. / {} / {} / {}'.format(
             self.name,
             self.money,
             self.owner,
             self.spendingType,
             self.comment,
-            periodic_flag
         )
-
-    def is_periodic(self):
-        return bool(self.periodicDebt)
 
 
 class PeriodicDebt(models.Model):
@@ -65,6 +56,7 @@ class PeriodicDebt(models.Model):
         choices=PERIOD_CHOICES,
         default='m'
     )
+    staticDebt = models.ForeignKey('StaticDebt')
     last_generation_date = models.DateField()
 
     class Meta:
@@ -72,11 +64,9 @@ class PeriodicDebt(models.Model):
         verbose_name_plural = 'Периодические траты'
 
     def __str__(self):
-        return r'{} / {} руб. / {} / {} / {}'.format(
-            self.name,
-            self.money,
-            self.owner,
-            self.spendingType,
+        return r'{} / {} / {}'.format(
+            self.staticDebt,
+            self.period,
             self.last_generation_date,
         )
 

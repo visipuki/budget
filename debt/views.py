@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from spending.models import SpendingType
-from debt.models import Debt, PeriodicDebt, DebtAccount
+from debt.models import Debt, StaticDebt, PeriodicDebt, DebtAccount
 from account.models import Account
 from debt.forms import DebtForm
 from datetime import date
@@ -50,13 +50,19 @@ def save_new_debt(request):
         comment = form.cleaned_data['comment']
         periodic = form.cleaned_data['periodic']
 
+        s = StaticDebt(
+            name=name,
+            money=money,
+            owner=owner,
+            spendingType=spendingType,
+            comment=comment
+        )
+        s.save()
+
         if periodic:
             p = PeriodicDebt(
                 period=periodic,
-                name=name,
-                money=money,
-                owner=owner,
-                spendingType=spendingType,
+                staticDebt=s,
                 last_generation_date=date.today(),
             )
             p.save()
@@ -64,11 +70,7 @@ def save_new_debt(request):
             p = None
 
         Debt(
-            name=name,
-            money=money,
-            owner=owner,
-            spendingType=spendingType,
-            comment=comment,
+            staticDebt=s,
             periodicDebt=p
         ).save()
 
@@ -78,13 +80,9 @@ def save_new_debt(request):
                 name='Долги',
                 money=0
             ).save()
-        total = DebtAccount.objects.get(pk=1).money
-        total -= money
-        DebtAccount(
-            id=1,
-            name='Долги',
-            money=total
-        ).save()
+        debt_account = DebtAccount.objects.get(pk=1)
+        debt_account.money -= money
+        debt_account.save()
 
 
 def update_old_debt(request, pk):
@@ -98,56 +96,56 @@ def update_old_debt(request, pk):
         periodic = form.cleaned_data['periodic']
 
         old_debt = Debt.objects.get(pk=pk)
-        difference = money - old_debt.money
+        difference = money - old_debt.staticDebt_money
+
+        s = StaticDebt(
+            id=old_debt.staticDebt_id,
+            name=name,
+            money=money,
+            owner=owner,
+            spendingType=spendingType,
+            comment=comment
+        )
+        s.save()
 
         if periodic:
             if old_debt.is_periodic():
-                periodic_debt_id = PeriodicDebt.objects.get(debt__id=pk).id
+                periodic_debt_id = old_debt.periodicDebt_id
             else:
                 periodic_debt_id = None
 
             p = PeriodicDebt(
                 id=periodic_debt_id,
                 period=periodic,
-                name=name,
-                money=money,
-                owner=owner,
-                spendingType=spendingType,
+                staticDebt=s,
                 last_generation_date=date.today(),
             )
             p.save()
         else:
             p = None
-            if Debt.objects.get(pk=pk).is_periodic():
+            if old_debt.is_periodic():
                 PeriodicDebt.objects.get(debt__id=pk).delete()
 
         Debt(
             id=pk,
-            name=name,
-            money=money,
-            owner=owner,
-            spendingType=spendingType,
-            comment=comment,
+            staticDebt=s,
             periodicDebt=p
         ).save()
 
-        total = DebtAccount.objects.get(pk=1).money
-        total -= difference
-        DebtAccount(
-            id=1,
-            name='Долги',
-            money=total
-        ).save()
+        debt_account = DebtAccount.objects.get(pk=1)
+        debt_account.money -= difference
+        debt_account.save()
 
 
 def initial_from_debt_object(pk):
     d = Debt.objects.get(pk=pk)
+    s = d.staticDebt
     initial = {
-        'name':         d.name,
-        'money':        d.money,
-        'owner':        d.owner,
-        'spendingType': d.spendingType,
-        'comment':      d.comment,
+        'name':         s.name,
+        'money':        s.money,
+        'owner':        s.owner,
+        'spendingType': s.spendingType,
+        'comment':      s.comment,
     }
     if d.is_periodic():
         initial['periodic'] = 'm'
