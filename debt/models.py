@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 class Debt(models.Model):
     staticDebt = models.ForeignKey('StaticDebt')
     periodicDebt = models.ForeignKey('PeriodicDebt', blank=True, null=True)
+    modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         if self.is_periodic():
@@ -32,7 +33,6 @@ class StaticDebt(models.Model):
     owner = models.ForeignKey(User)
     spendingType = models.ForeignKey(SpendingType)
     comment = models.CharField(max_length=32)
-    modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return r'{} / {} руб. / {} / {} / {}'.format(
@@ -56,7 +56,7 @@ class PeriodicDebt(models.Model):
         choices=PERIOD_CHOICES,
         default='m'
     )
-    staticDebt = models.ForeignKey('StaticDebt')
+    staticDebt = models.OneToOneField('StaticDebt')
     last_generation_date = models.DateField()
 
     class Meta:

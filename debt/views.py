@@ -96,7 +96,7 @@ def update_old_debt(request, pk):
         periodic = form.cleaned_data['periodic']
 
         old_debt = Debt.objects.get(pk=pk)
-        difference = money - old_debt.staticDebt_money
+        difference = money - old_debt.staticDebt.money
 
         s = StaticDebt(
             id=old_debt.staticDebt_id,
