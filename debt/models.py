@@ -4,13 +4,30 @@ from django.contrib.auth.models import User
 
 
 class Debt(models.Model):
+    staticDebt = models.ForeignKey('StaticDebt')
+    periodicDebt = models.ForeignKey('PeriodicDebt', blank=True, null=True)
+
+    def __str__(self):
+        return r'{} / {} руб. / {} / {} / {}'.format(
+            self.staticDebt.name,
+            self.staticDebt.money,
+            self.staticDebt.owner,
+            self.staticDebt.spendingType,
+            self.staticDebt.comment,
+
+        )
+
+    def is_periodic(self):
+        return bool(self.periodicDebt)
+
+
+class StaticDebt(models.Model):
     name = models.CharField(max_length=32)
     money = models.IntegerField()
     owner = models.ForeignKey(User)
     spendingType = models.ForeignKey(SpendingType)
     comment = models.CharField(max_length=32)
     modified = models.DateTimeField(auto_now=True)
-    periodicDebt = models.ForeignKey('PeriodicDebt', blank=True, null=True)
 
     class Meta:
         verbose_name = 'Планируемая трата'
@@ -41,10 +58,6 @@ class PeriodicDebt(models.Model):
         choices=PERIOD_CHOICES,
         default='m'
     )
-    name = models.CharField(max_length=32)
-    money = models.IntegerField()
-    owner = models.ForeignKey(User)
-    spendingType = models.ForeignKey(SpendingType)
     last_generation_date = models.DateField()
 
     class Meta:
