@@ -24,9 +24,10 @@ class Spending(models.Model):
     incomeType = models.ForeignKey(Account)
 
     def __str__(self):
-        return r'{} / {} / {} / {} руб.'.format(
+        return r'{} / {} / {} / {} руб./ {}'.format(
             self.date.strftime('%d-%m-%Y'),
             self.owner,
             self.spendingType,
-            self.money
+            self.money,
+            self.comment,
         )
