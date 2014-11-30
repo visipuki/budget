@@ -14,8 +14,9 @@ class Debt(models.Model):
             periodic_flag = self.periodicDebt.get_period_display()
         else:
             periodic_flag = 'разовая'
-        return r'{} / {}'.format(
+        return r'{} / {} / {}'.format(
             self.staticDebt,
+            self.comment,
             periodic_flag,
         )
 
@@ -34,13 +35,17 @@ class StaticDebt(models.Model):
     owner = models.ForeignKey(User)
     spendingType = models.ForeignKey(SpendingType)
 
+    class Meta:
+
+        verbose_name = 'Характеристики траты'
+        verbose_name_plural = 'Характеристики трат'
+
     def __str__(self):
-        return r'{} / {} руб. / {} / {} / {}'.format(
+        return r'{} / {} руб. / {} / {}'.format(
             self.name,
             self.money,
             self.owner,
             self.spendingType,
-            self.comment,
         )
 
 

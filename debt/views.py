@@ -145,7 +145,7 @@ def initial_from_debt_object(pk):
         'money':        s.money,
         'owner':        s.owner,
         'spendingType': s.spendingType,
-        'comment':      s.comment,
+        'comment':      d.comment,
     }
     if d.is_periodic():
         initial['periodic'] = 'm'
