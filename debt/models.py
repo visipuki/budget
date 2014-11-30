@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 class Debt(models.Model):
     staticDebt = models.ForeignKey('StaticDebt')
     periodicDebt = models.ForeignKey('PeriodicDebt', blank=True, null=True)
+    comment = models.CharField(max_length=32)
     modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -32,7 +33,6 @@ class StaticDebt(models.Model):
     money = models.IntegerField()
     owner = models.ForeignKey(User)
     spendingType = models.ForeignKey(SpendingType)
-    comment = models.CharField(max_length=32)
 
     def __str__(self):
         return r'{} / {} руб. / {} / {} / {}'.format(

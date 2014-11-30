@@ -55,7 +55,6 @@ def save_new_debt(request):
             money=money,
             owner=owner,
             spendingType=spendingType,
-            comment=comment
         )
         s.save()
 
@@ -71,7 +70,8 @@ def save_new_debt(request):
 
         Debt(
             staticDebt=s,
-            periodicDebt=p
+            periodicDebt=p,
+            comment=comment,
         ).save()
 
         if not DebtAccount.objects.count():
@@ -104,7 +104,6 @@ def update_old_debt(request, pk):
             money=money,
             owner=owner,
             spendingType=spendingType,
-            comment=comment
         )
         s.save()
 
@@ -129,7 +128,8 @@ def update_old_debt(request, pk):
         Debt(
             id=pk,
             staticDebt=s,
-            periodicDebt=p
+            periodicDebt=p,
+            comment=comment,
         ).save()
 
         debt_account = DebtAccount.objects.get(pk=1)
