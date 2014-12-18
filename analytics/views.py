@@ -5,6 +5,7 @@ from datetime import date
 from datetime import datetime
 from calendar import monthrange
 from operator import itemgetter
+from spending.models import Spending
 from spending.models import SpendingType as Sp_t
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
@@ -46,10 +47,13 @@ def analyticsView(request, *args):
                                       'endDate': end_str})
     totals = cost_by_type(start, end)
     relation = cost_relation(totals)
+    l = Spending.objects.filter(date__lte=end).filter(date__gte=start)
+    l = l[::-1]
 
     context = {'username': request.user,
                'form': form,
                'totals': totals,
+               'latest_spending_list': l,
                'relation': relation}
     return render(request,
                   './analytics/index.html',

@@ -19,4 +19,13 @@
 {% else %}
   <p>За указанный период трат нет</p>
 {% endif %}
+{% if latest_spending_list %}
+  <ul><h4>Список трат за указанный период</h4>
+  {% for spending in latest_spending_list %}
+     <li><a href='/{{ spending.pk }}/'>{{ spending }}</a></li>
+  {% endfor %}
+  </ul>
+{% else %}
+  <p>Нет записей</p>
+{% endif %}
 {% endblock %}
