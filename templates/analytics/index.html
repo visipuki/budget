@@ -19,4 +19,21 @@
 {% else %}
   <p>За указанный период трат нет</p>
 {% endif %}
+{% if analysis_list %}
+  {% for a in analysis_list %}
+  <div id="{{ a.name }}" class="analysis">
+    <ul><h4>{{ a.title }}</h4>
+    {% if a.data %}
+	    {% for type, value in a.data %}
+	      <li>{{ type }} = {{ value }}</li>
+	    {% endfor %}
+    {% else %}
+            <li>Данных нет</li>
+    {% endif %}
+    </ul>
+  </div>
+  {% endfor %}
+{% else %}
+  <p>Данных нет</p>
+{% endif %}
 {% endblock %}

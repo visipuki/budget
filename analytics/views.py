@@ -10,6 +10,13 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 
 
+class Analysis():
+    def __init(self, name, title, data):
+        self.name = name
+        self.title = title
+        self.data = data
+
+
 @login_required
 def analyticsView(request, *args):
     if request.method == 'POST':
@@ -44,13 +51,23 @@ def analyticsView(request, *args):
                 end_str, start_str = start_str, end_str
         form = DateRangeForm(initial={'startDate': start_str,
                                       'endDate': end_str})
-    totals = cost_by_type(start, end)
-    relation = cost_relation(totals)
+    totals = Analysis(
+        'totals',
+        'Сумма трат по типам за указанный период',
+        cost_by_type(start, end)
+    )
+    relation = Analysis(
+        'relation',
+        'Процентное соотношение трат по типам за указанный период',
+        cost_relation(totals)
+    )
 
+    analysis_list = [totals, relation]
     context = {'username': request.user,
                'form': form,
                'totals': totals,
-               'relation': relation}
+               'relation': relation,
+               'analysis_list': analysis_list}
     return render(request,
                   './analytics/index.html',
                   context)
