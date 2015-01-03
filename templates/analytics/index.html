@@ -5,27 +5,30 @@
 {{ form.as_p }}
 <input type="submit" value="Обновить" />
 </form>
-{% if totals %}
-  <ul><h4>Сумма трат по типам за указанный период</h4>
-  {% for type, tot in totals%}
-    <li>{{type}} = {{tot}} руб.</li>
-  {% endfor %}
-  </ul>
-  <ul><h4>Процентное соотношение трат по типам за указанный период</h4>
-  {% for type, perc in relation%}
-    <li>{{type}} = {{perc}} %</li>
-  {% endfor %}
-  </ul>
+{% if analysis_list %}
+{% for a in analysis_list %}
+<div id="{{ a.name }}" class="analysis">
+<ul><h4>{{ a.title }}</h4>
+{% if a.data %}
+{% for type, value in a.data %}
+<li>{{ type }} = {{ value }}</li>
+{% endfor %}
 {% else %}
-  <p>За указанный период трат нет</p>
+<li>Данных нет</li>
+{% endif %}
+</ul>
+</div>
+{% endfor %}
+{% else %}
+<p>Данных нет</p>
 {% endif %}
 {% if latest_spending_list %}
-  <ul><h4>Список трат за указанный период</h4>
-  {% for spending in latest_spending_list %}
-     <li><a href='/{{ spending.pk }}/'>{{ spending }}</a></li>
-  {% endfor %}
-  </ul>
+<ul><h4>Список трат за указанный период</h4>
+{% for spending in latest_spending_list %}
+<li><a href='/{{ spending.pk }}/'>{{ spending }}</a></li>
+{% endfor %}
+</ul>
 {% else %}
-  <p>Нет записей</p>
+<p>Нет записей</p>
 {% endif %}
 {% endblock %}

@@ -3,12 +3,18 @@ from django.http import HttpResponseRedirect
 from analytics.forms import DateRangeForm
 from datetime import date
 from datetime import datetime
-from calendar import monthrange
 from operator import itemgetter
 from spending.models import Spending
 from spending.models import SpendingType as Sp_t
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
+
+
+class Analysis():
+    def __init__(self, name, title, data):
+        self.name = name
+        self.title = title
+        self.data = data
 
 
 @login_required
@@ -28,12 +34,7 @@ def analyticsView(request, *args):
     else:
         if not args:
             end = date.today()
-            if end.day == monthrange(end.year, end.month)[1]:
-                start = end.replace(day=1)
-            elif end.day+1 > monthrange(end.year, end.month-1)[1]:
-                start = end.replace(day=1)
-            else:
-                start = end.replace(month=end.month-1, day=end.day+1)
+            start = end.replace(day=1)
             end_str = end.strftime('%d-%m-%Y')
             start_str = start.strftime('%d-%m-%Y')
         else:
@@ -45,16 +46,25 @@ def analyticsView(request, *args):
                 end_str, start_str = start_str, end_str
         form = DateRangeForm(initial={'startDate': start_str,
                                       'endDate': end_str})
-    totals = cost_by_type(start, end)
-    relation = cost_relation(totals)
+
     l = Spending.objects.filter(date__lte=end).filter(date__gte=start)
     l = l[::-1]
+    totals = Analysis(
+        'totals',
+        'Сумма трат по типам за указанный период',
+        cost_by_type(start, end)
+    )
+    relation = Analysis(
+        'relation',
+        'Процентное соотношение трат по типам за указанный период',
+        cost_relation(totals.data)
+    )
 
+    analysis_list = [totals, relation]
     context = {'username': request.user,
                'form': form,
-               'totals': totals,
                'latest_spending_list': l,
-               'relation': relation}
+               'analysis_list': analysis_list}
     return render(request,
                   './analytics/index.html',
                   context)
