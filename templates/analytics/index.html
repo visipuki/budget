@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block analize_tab %}class="tab_backlight" {% endblock %}
 {% block content %}
+<script type="text/javascript" src="/static/js/show_hide_analysis.js"></script>
 <form method="post">{% csrf_token %}
 {{ form.as_p }}
 <input type="submit" value="Обновить" />
@@ -9,7 +10,7 @@
   {% for a in analysis_list %}
   <div class="analysis">
     <h4>{{ a.title }}</h4>
-    <div id="{{ a.name }}">
+    <div class="list">
       {% if a.data %}
             {% for type, value in a.data %}
 	    <div id="left">{{ type }}</div>
