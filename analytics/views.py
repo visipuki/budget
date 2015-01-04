@@ -4,6 +4,7 @@ from analytics.forms import DateRangeForm
 from datetime import date
 from datetime import datetime
 from operator import itemgetter
+from spending.models import Spending
 from spending.models import SpendingType as Sp_t
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
@@ -46,6 +47,9 @@ def analyticsView(request, *args):
                 end_str, start_str = start_str, end_str
         form = DateRangeForm(initial={'startDate': start_str,
                                       'endDate': end_str})
+
+    l = Spending.objects.filter(date__lte=end).filter(date__gte=start)
+    l = l[::-1]
     totals = Analysis(
         'totals',
         'Сумма трат по типам за указанный период',
@@ -74,8 +78,7 @@ def analyticsView(request, *args):
     ]
     context = {'username': request.user,
                'form': form,
-               'totals': totals,
-               'relation': relation,
+               'latest_spending_list': l,
                'analysis_list': analysis_list}
     return render(request,
                   './analytics/index.html',
