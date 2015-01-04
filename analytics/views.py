@@ -3,11 +3,11 @@ from django.http import HttpResponseRedirect
 from analytics.forms import DateRangeForm
 from datetime import date
 from datetime import datetime
-from calendar import monthrange
 from operator import itemgetter
 from spending.models import SpendingType as Sp_t
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
+from django.contrib.auth.models import User
 
 
 class Analysis():
@@ -34,12 +34,7 @@ def analyticsView(request, *args):
     else:
         if not args:
             end = date.today()
-            if end.day == monthrange(end.year, end.month)[1]:
-                start = end.replace(day=1)
-            elif end.day+1 > monthrange(end.year, end.month-1)[1]:
-                start = end.replace(day=1)
-            else:
-                start = end.replace(month=end.month-1, day=end.day+1)
+            start = end.replace(day=1)
             end_str = end.strftime('%d-%m-%Y')
             start_str = start.strftime('%d-%m-%Y')
         else:
@@ -61,8 +56,22 @@ def analyticsView(request, *args):
         'Процентное соотношение трат по типам за указанный период',
         cost_relation(totals)
     )
-
-    analysis_list = [totals, relation]
+    who_spends_more = Analysis(
+        'earnings',
+        'Заработки за период',
+        spending_by_user(start, end)
+    )
+    who_earns_more = Analysis(
+        'earnings',
+        'Заработки за период',
+        earning_by_user(start, end)
+    )
+    analysis_list = [
+        totals,
+        relation,
+        who_earns_more,
+        who_spends_more,
+    ]
     context = {'username': request.user,
                'form': form,
                'totals': totals,
@@ -96,3 +105,25 @@ def cost_relation(cost_by_type):
     else:
         relation = []
     return relation
+
+
+def spending_by_user(start, end):
+    spender_list = [
+        (u.name, u.total)
+        for u in User.objects.filter(
+            spending__date__gte=start,
+            spending__date__lte=end
+        ).annotate(total=Sum('spending__money'))
+    ]
+    return spender_list
+
+
+def earning_by_user(start, end):
+    earner_list = [
+        (u.name, u.total)
+        for u in User.objects.filter(
+            spending__date__gte=start,
+            spending__date__lte=end
+        ).annotate(total=Sum('income__money'))
+    ]
+    return earner_list
