@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 
 
 class Analysis():
-    def __init(self, name, title, data):
+    def __init__(self, name, title, data):
         self.name = name
         self.title = title
         self.data = data
@@ -58,11 +58,11 @@ def analyticsView(request, *args):
     relation = Analysis(
         'relation',
         'Процентное соотношение трат по типам за указанный период',
-        cost_relation(totals)
+        cost_relation(totals.data)
     )
     who_spends_more = Analysis(
         'spendings',
-        'Заработки за период',
+        'Траты по персоналиям за период',
         spending_by_user(start, end)
     )
     who_earns_more = Analysis(
@@ -73,8 +73,8 @@ def analyticsView(request, *args):
     analysis_list = [
         totals,
         relation,
-        who_earns_more,
         who_spends_more,
+        who_earns_more,
     ]
     context = {'username': request.user,
                'form': form,
@@ -112,7 +112,7 @@ def cost_relation(cost_by_type):
 
 def spending_by_user(start, end):
     spender_list = [
-        (u.name, u.total)
+        (u.username, u.total)
         for u in User.objects.filter(
             spending__date__gte=start,
             spending__date__lte=end
@@ -123,10 +123,10 @@ def spending_by_user(start, end):
 
 def earning_by_user(start, end):
     earner_list = [
-        (u.name, u.total)
+        (u.username, u.total)
         for u in User.objects.filter(
-            spending__date__gte=start,
-            spending__date__lte=end
+            income__date__gte=start,
+            income__date__lte=end
         ).annotate(total=Sum('income__money'))
     ]
     return earner_list
