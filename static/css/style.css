@@ -116,6 +116,25 @@ td, th {
   position:relative;
   top:1px;
 }
+.analysis {
+  background: rgb(231, 255, 205);
+  border: 1px solid #29331F;
+  margin: 1em 0;
+  padding: 0 0 1em 0;
+}
+.analysis #left {
+  float: left;
+  width: 48%;
+  text-align: right;
+}
+.analysis #right {
+  float: right;
+  width: 48%;
+  text-align: left;
+}
+.analysis #center {
+  margin: 0 auto;
+}
 @media screen and (max-width: 1000px) {
   td {
     font-size: 2em;
