@@ -1,34 +1,38 @@
 {% extends "base.html" %}
 {% block analize_tab %}class="tab_backlight" {% endblock %}
 {% block content %}
+<script type="text/javascript" src="/static/js/show_hide_analysis.js"></script>
 <form method="post">{% csrf_token %}
 {{ form.as_p }}
 <input type="submit" value="Обновить" />
 </form>
 {% if analysis_list %}
-{% for a in analysis_list %}
-<div id="{{ a.name }}" class="analysis">
-<ul><h4>{{ a.title }}</h4>
-{% if a.data %}
-{% for type, value in a.data %}
-<li>{{ type }} = {{ value }}</li>
-{% endfor %}
-{% else %}
-<li>Данных нет</li>
-{% endif %}
-</ul>
-</div>
-{% endfor %}
-{% else %}
-<p>Данных нет</p>
-{% endif %}
-{% if latest_spending_list %}
-<ul><h4>Список трат за указанный период</h4>
-{% for spending in latest_spending_list %}
-<li><a href='/{{ spending.pk }}/'>{{ spending }}</a></li>
-{% endfor %}
-</ul>
+  {% for a in analysis_list %}
+  <div class="analysis">
+    <h4>{{ a.title }}</h4>
+    <div class="list">
+      {% if a.data %}
+            {% for type, value in a.data %}
+	    <div id="left">{{ type }}</div>
+	    <div id="right">{{ value }}</div>
+	    <div id="center">=</div>
+            {% endfor %}
+      {% else %}
+              <li>Данных нет</li>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
 {% else %}
 <p>Нет записей</p>
 {% endif %}
+{% if latest_spending_list %}
+<h4>Список трат за указанный период</h4>
+{% for spending in latest_spending_list %}
+<li><a href='/{{ spending.pk }}/'>{{ spending }}</a></li>
+{% endfor %}
+{% else %}
+<p>Нет записей</p>
+{% endif %}
+
 {% endblock %}

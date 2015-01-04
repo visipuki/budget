@@ -8,6 +8,7 @@ from spending.models import Spending
 from spending.models import SpendingType as Sp_t
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
+from django.contrib.auth.models import User
 
 
 class Analysis():
@@ -59,8 +60,22 @@ def analyticsView(request, *args):
         'Процентное соотношение трат по типам за указанный период',
         cost_relation(totals.data)
     )
-
-    analysis_list = [totals, relation]
+    who_spends_more = Analysis(
+        'spendings',
+        'Траты по персоналиям за период',
+        spending_by_user(start, end)
+    )
+    who_earns_more = Analysis(
+        'earnings',
+        'Заработки за период',
+        earning_by_user(start, end)
+    )
+    analysis_list = [
+        totals,
+        relation,
+        who_spends_more,
+        who_earns_more,
+    ]
     context = {'username': request.user,
                'form': form,
                'latest_spending_list': l,
@@ -93,3 +108,25 @@ def cost_relation(cost_by_type):
     else:
         relation = []
     return relation
+
+
+def spending_by_user(start, end):
+    spender_list = [
+        (u.username, u.total)
+        for u in User.objects.filter(
+            spending__date__gte=start,
+            spending__date__lte=end
+        ).annotate(total=Sum('spending__money'))
+    ]
+    return spender_list
+
+
+def earning_by_user(start, end):
+    earner_list = [
+        (u.username, u.total)
+        for u in User.objects.filter(
+            income__date__gte=start,
+            income__date__lte=end
+        ).annotate(total=Sum('income__money'))
+    ]
+    return earner_list
