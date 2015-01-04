@@ -57,7 +57,7 @@ def analyticsView(request, *args):
         cost_relation(totals)
     )
     who_spends_more = Analysis(
-        'earnings',
+        'spendings',
         'Заработки за период',
         spending_by_user(start, end)
     )
