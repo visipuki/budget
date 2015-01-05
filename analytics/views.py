@@ -4,6 +4,7 @@ from analytics.forms import DateRangeForm
 from datetime import date
 from datetime import datetime
 from operator import itemgetter
+from income.models import Income
 from spending.models import Spending
 from spending.models import SpendingType as Sp_t
 from django.contrib.auth.decorators import login_required
@@ -48,38 +49,44 @@ def analyticsView(request, *args):
         form = DateRangeForm(initial={'startDate': start_str,
                                       'endDate': end_str})
 
-    l = Spending.objects.filter(date__lte=end).filter(date__gte=start)
-    l = l[::-1]
+    spending_list = Spending.objects.filter(date__lte=end).filter(date__gte=start)
+    spending_list = spending_list[::-1]
+    income_list = Income.objects.filter(date__lte=end).filter(date__gte=start)
+    income_list = income_list[::-1]
+
     totals = Analysis(
-        'totals',
+        '',
         'Сумма трат по типам за указанный период',
         cost_by_type(start, end)
     )
     relation = Analysis(
-        'relation',
+        '',
         'Процентное соотношение трат по типам за указанный период',
         cost_relation(totals.data)
     )
-    who_spends_more = Analysis(
-        'spendings',
+    spenders = Analysis(
+        '',
         'Траты по персоналиям за период',
         spending_by_user(start, end)
     )
-    who_earns_more = Analysis(
-        'earnings',
+    earners = Analysis(
+        '',
         'Заработки за период',
         earning_by_user(start, end)
     )
     analysis_list = [
         totals,
         relation,
-        who_spends_more,
-        who_earns_more,
+        spenders,
+        earners,
     ]
-    context = {'username': request.user,
-               'form': form,
-               'latest_spending_list': l,
-               'analysis_list': analysis_list}
+    context = {
+            'username': request.user,
+            'form': form,
+            'latest_spending_list': spending_list,
+            'income_list': income_list,
+            'analysis_list': analysis_list,
+    }
     return render(request,
                   './analytics/index.html',
                   context)

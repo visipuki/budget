@@ -26,10 +26,18 @@
 {% else %}
 <p>Нет записей</p>
 {% endif %}
-{% if latest_spending_list %}
 <h4>Список трат за указанный период</h4>
+{% if latest_spending_list %}
 {% for spending in latest_spending_list %}
 <li><a href='/{{ spending.pk }}/'>{{ spending }}</a></li>
+{% endfor %}
+{% else %}
+<p>Нет записей</p>
+{% endif %}
+<h4>Список доходов за указанный период</h4>
+{% if income_list %}
+{% for income in income_list %}
+<li><a href='/{{ income.pk }}/'>{{ income }}</a></li>
 {% endfor %}
 {% else %}
 <p>Нет записей</p>
