@@ -37,7 +37,7 @@
 <h4>Список доходов за указанный период</h4>
 {% if income_list %}
 {% for income in income_list %}
-<li><a href='/{{ income.pk }}/'>{{ income }}</a></li>
+<li><a href='/income/{{ income.pk }}/'>{{ income }}</a></li>
 {% endfor %}
 {% else %}
 <p>Нет записей</p>
