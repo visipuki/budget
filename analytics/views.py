@@ -10,6 +10,8 @@ from spending.models import SpendingType as Sp_t
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.contrib.auth.models import User
+from debt.models import DebtAccount
+from account.models import Account
 
 
 class Analysis():
@@ -24,14 +26,8 @@ def analyticsView(request, *args):
     if request.method == 'POST':
         form = DateRangeForm(request.POST)
         if form.is_valid():
-            start = form.cleaned_data['startDate']
-            end = form.cleaned_data['endDate']
-            if start > end:
-                end, start = start, end
-            start_str = start.strftime('%d-%m-%Y')
-            end_str = end.strftime('%d-%m-%Y')
             return HttpResponseRedirect(
-                '/analytics/'+start_str+'_'+end_str+'/'
+                '/analytics/'+redirectURLtailCreation(form)
             )
     else:
         if not args:
@@ -49,47 +45,56 @@ def analyticsView(request, *args):
         form = DateRangeForm(initial={'startDate': start_str,
                                       'endDate': end_str})
 
-    spending_list = Spending.objects.filter(date__lte=end).filter(date__gte=start)
-    spending_list = spending_list[::-1]
-    income_list = Income.objects.filter(date__lte=end).filter(date__gte=start)
-    income_list = income_list[::-1]
+        spending_list = Spending.objects.filter(
+            date__lte=end
+        ).filter(date__gte=start)
+        spending_list = spending_list[::-1]
+        income_list = Income.objects.filter(
+            date__lte=end
+        ).filter(date__gte=start)
+        income_list = income_list[::-1]
 
-    totals = Analysis(
-        '',
-        'Сумма трат по типам за указанный период',
-        cost_by_type(start, end)
-    )
-    relation = Analysis(
-        '',
-        'Процентное соотношение трат по типам за указанный период',
-        cost_relation(totals.data)
-    )
-    spenders = Analysis(
-        '',
-        'Траты по персоналиям за период',
-        spending_by_user(start, end)
-    )
-    earners = Analysis(
-        '',
-        'Заработки за период',
-        earning_by_user(start, end)
-    )
-    analysis_list = [
-        totals,
-        relation,
-        spenders,
-        earners,
-    ]
-    context = {
+        totals = Analysis(
+            '',
+            'Сумма трат по типам',
+            cost_by_type(start, end)
+        )
+        relation = Analysis(
+            '',
+            'Процентное соотношение трат по типам',
+            cost_relation(totals.data)
+        )
+        spenders = Analysis(
+            '',
+            'Траты по персоналиям',
+            spending_by_user(start, end)
+        )
+        earners = Analysis(
+            '',
+            'Заработки',
+            earning_by_user(start, end)
+        )
+        analysis_list = [
+            totals,
+            relation,
+            spenders,
+            earners,
+        ]
+        account_list = list(Account.objects.all())\
+            + list(DebtAccount.objects.all())
+        context = {
+            'account_list': account_list,
             'username': request.user,
             'form': form,
             'latest_spending_list': spending_list,
             'income_list': income_list,
             'analysis_list': analysis_list,
-    }
-    return render(request,
-                  './analytics/index.html',
-                  context)
+        }
+        return render(
+            request,
+            './analytics/index.html',
+            context
+        )
 
 
 def cost_by_type(start, end):
@@ -137,3 +142,33 @@ def earning_by_user(start, end):
         ).annotate(total=Sum('income__money'))
     ]
     return earner_list
+
+def redirectURLtailCreation(form):
+    start = form.cleaned_data['startDate']
+    end = form.cleaned_data['endDate']
+    if start > end:
+        end, start = start, end
+    start_str = start.strftime('%d-%m-%Y')
+    end_str = end.strftime('%d-%m-%Y')
+    filter_dict = {
+        'daterange': start_str+'_'+end_str,
+        'user': '_'.join(
+            u.id
+            for u in User.objects.all()
+            if form.cleaned_data[u.username]
+        ),
+        'account': '_'.join(
+            a.id
+            for a in Account.objects.all()
+            if form.cleaned_data[a.name]
+        ),
+        'spendingType': '_'.join(
+            s.id
+            for s in SpendingType.objects.all()
+            if form.cleaned_data[s.name]
+        ),
+    }
+    redirectURLtail = ''
+    for k, v in filter_dict:
+        redirectURLtail += k+'/'+v+'/'
+    return {}
