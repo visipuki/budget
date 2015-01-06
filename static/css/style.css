@@ -105,7 +105,7 @@ td, th {
   height: 50px;
   border: 2px solid #B8B894;
   border-radius: 15px;
-  margin: 1em 0 0 0;
+  margin: .5em 0 0 0;
   text-shadow: 1px 1px 1px #B2B299;
   box-shadow: 0px 10px 14px -7px #1F1F0F;
 }
@@ -115,6 +115,12 @@ td, th {
 #content input[type="submit"]:active {
   position:relative;
   top:1px;
+}
+.filterForm {
+  margin: 1em 0 1.5em 0;
+}
+.filterForm  div {
+  margin: .5em 0;
 }
 .analysis {
   background: rgb(231, 255, 205);

@@ -2,10 +2,32 @@
 {% block analize_tab %}class="tab_backlight" {% endblock %}
 {% block content %}
 <script type="text/javascript" src="/static/js/show_hide_analysis.js"></script>
-<form method="post">{% csrf_token %}
-{{ form.as_p }}
+<div class="filterForm">
+  <form method="post">{% csrf_token %}
+  {{ form.errors }}
+  <div id="dateFilter">
+  {% for field in form.dateTag_fields %}
+      {{ field.label_tag }} {{ field }}
+  {% endfor %}
+  </div>
+  <div id="userFilter">
+  {% for field in form.userTag_fields %}
+      {{ field.label_tag }} {{ field }}
+  {% endfor %}
+  </div>
+  <div id="AccountFilter">
+  {% for field in form.accountTag_fields %}
+      {{ field.label_tag }} {{ field }}
+  {% endfor %}
+  </div>
+  <div id="SpendingTypeFilter">
+  {% for field in form.spendingTypeTag_fields %}
+      {{ field.label_tag }} {{ field }}
+  {% endfor %}
+</div>
 <input type="submit" value="Обновить" />
 </form>
+</div>
 {% if analysis_list %}
   {% for a in analysis_list %}
   <div class="analysis">
