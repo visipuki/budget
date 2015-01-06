@@ -11,24 +11,29 @@ class CalendarWidget(forms.TextInput):
         }
         js = ('/static/js/jquery.pickmeup.min.js',
               '/static/js/date.input.js')
-    def __init__(self):
-        super().__init__({'class': 'date'})
 
+    def __init__(self):
+        super().__init__(
+            {'class': 'date', 'size': '8'},
+        )
 
 
 class SpendingForm(forms.Form):
-    date = forms.DateField(required=True,
-                           label='Дата',
-                           input_formats=['%d-%m-%Y',
-                                          '%d-%m-%y',
-                                          '%d/%m/%y',
-                                          '%d/%m/%Y',
-                                          '%d.%m.%y',
-                                          '%d.%m.%Y'],
-                           widget=CalendarWidget
+    date = forms.DateField(
+        required=True,
+        label='Дата',
+        input_formats=[
+            '%d-%m-%Y',
+            '%d-%m-%y',
+            '%d/%m/%y',
+            '%d/%m/%Y',
+            '%d.%m.%y',
+            '%d.%m.%Y'
+        ],
+        widget=CalendarWidget
     )
     money = forms.IntegerField(
-        label ='Расход*',
+        label='Расход*',
         required=True
     )
     comment = forms.CharField(
