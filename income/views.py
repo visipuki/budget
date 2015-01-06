@@ -31,7 +31,7 @@ def incomeView(request, *args):
         }
         return render(
             request,
-            'income/index.html',
+            './income/index.html',
             context
         )
 
