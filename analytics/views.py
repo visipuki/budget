@@ -24,87 +24,72 @@ class Analysis():
 
 @login_required
 def analyticsView(request, *args):
+    conditions = conditions_from(args)
+    initial = initial_from(conditions)
     if request.method == 'POST':
-        form = DateRangeForm(request.POST)
+        form = DateRangeForm(request.POST, label_suffix='')
         if form.is_valid():
             return HttpResponseRedirect(
                 '/analytics/'+redirectURLtailCreation(form)
             )
     else:
-        if not args:
-            end = date.today()
-            start = end.replace(day=1)
-            end_str = end.strftime('%d-%m-%Y')
-            start_str = start.strftime('%d-%m-%Y')
-            conditions = {
-                'date__gte': start_str,
-                'date__lte': end_str
-            }
-            initial = conditions
-        else:
-            conditions = conditions_from(args)
-            if conditions['date__gte'] > conditions['date__lte']:
-                conditions['date__gte'], conditions['date__lte'] =\
-                    conditions['date__lte'], conditions['date__gte']
-            initial = initial_from(conditions)
+        form = DateRangeForm(initial, label_suffix='')
 
-        form = DateRangeForm(initial)
+    spending_list = Spending.objects.filter(
+        dateRangeFilter(conditions),
+        tagFilter(conditions, 'owner_id'),
+        tagFilter(conditions, 'spendingType_id'),
+        tagFilter(conditions, 'incomeType_id'),
+    )
+    spending_list = spending_list[::-1]
+    income_list = Income.objects.filter(
+        dateRangeFilter(conditions),
+        tagFilter(conditions, 'owner_id'),
+        tagFilter(conditions, 'incomeType_id'),
+    )
+    income_list = income_list[::-1]
 
-        spending_list = Spending.objects.filter(
-            dateRangeFilter(conditions),
-            tagFilter(conditions, 'owner_id'),
-            tagFilter(conditions, 'spendingType_id'),
-            tagFilter(conditions, 'incomeType_id'),
-        )
-        spending_list = spending_list[::-1]
-        income_list = Income.objects.filter(
-            dateRangeFilter(conditions),
-            tagFilter(conditions, 'owner_id'),
-            tagFilter(conditions, 'incomeType_id'),
-        )
-        income_list = income_list[::-1]
-
-        totals = Analysis(
-            '',
-            'Сумма трат по типам',
-            cost_by_type(conditions)
-        )
-        relation = Analysis(
-            '',
-            'Процентное соотношение трат по типам',
-            cost_relation(totals.data)
-        )
-        spenders = Analysis(
-            '',
-            'Траты по персоналиям',
-            spending_by_owner(conditions)
-        )
-        earners = Analysis(
-            '',
-            'Заработки',
-            earning_by_owner(conditions)
-        )
-        analysis_list = [
-            totals,
-            relation,
-            spenders,
-            earners,
-        ]
-        account_list = list(Account.objects.all())\
-            + list(DebtAccount.objects.all())
-        context = {
-            'account_list': account_list,
-            'username': request.user,
-            'form': form,
-            'latest_spending_list': spending_list,
-            'income_list': income_list,
-            'analysis_list': analysis_list,
-        }
-        return render(
-            request,
-            './analytics/index.html',
-            context
-        )
+    totals = Analysis(
+        '',
+        'Сумма трат по типам',
+        cost_by_type(conditions)
+    )
+    relation = Analysis(
+        '',
+        'Процентное соотношение трат по типам',
+        cost_relation(totals.data)
+    )
+    spenders = Analysis(
+        '',
+        'Траты по персоналиям',
+        spending_by_owner(conditions)
+    )
+    earners = Analysis(
+        '',
+        'Заработки',
+        earning_by_owner(conditions)
+    )
+    analysis_list = [
+        totals,
+        relation,
+        spenders,
+        earners,
+    ]
+    account_list = list(Account.objects.all())\
+        + list(DebtAccount.objects.all())
+    context = {
+        'account_list': account_list,
+        'username': request.user,
+        'form': form,
+        'latest_spending_list': spending_list,
+        'income_list': income_list,
+        'analysis_list': analysis_list,
+    }
+    return render(
+        request,
+        './analytics/index.html',
+        context
+    )
 
 
 def cost_by_type(conditions):
@@ -190,18 +175,16 @@ def redirectURLtailCreation(form):
     return redirectURLtail
 
 
-def conditions_from(view_args):
-    view_args = list(view_args)
-    del view_args[::3]
-    conditions = dict(zip(view_args[::2], view_args[1::2]))
-    if None in conditions.keys(): del conditions[None]
-    return conditions
-
-
 def dateRangeFilter(conditions, prefix=''):
     return Q(**{
-        prefix+'date__gte': datetime.strptime(conditions['date__gte'], '%d-%m-%Y'),
-        prefix+'date__lte': datetime.strptime(conditions['date__lte'], '%d-%m-%Y')
+        prefix+'date__gte': datetime.strptime(
+            conditions['date__gte'],
+            '%d-%m-%Y'
+        ),
+        prefix+'date__lte': datetime.strptime(
+            conditions['date__lte'],
+            '%d-%m-%Y'
+        )
     })
 
 
@@ -221,29 +204,67 @@ def tagFilter(conditions, tag, prefix='', new_tag=''):
 
 
 def initial_from(conditions):
-    initial = {}
-    initial['date__gte'] = datetime.strptime(
-        conditions['date__gte'], '%d-%m-%Y'
-    )
-    initial['date__lte'] = datetime.strptime(
-        conditions['date__lte'], '%d-%m-%Y'
-    )
-    spt_q_filter = tagFilter(conditions, 'spendingType_id', new_tag='id')
-    if spt_q_filter:
-        for s in Sp_t.objects.filter(
-            spt_q_filter
-        ):
-            initial[s.name] = True
-    income_q_filter = tagFilter(conditions, 'incomeType_id', new_tag='id')
-    if income_q_filter:
-        for i in Account.objects.filter(
-            income_q_filter
-        ):
-            initial[i.name] = True
-    user_q_filter = tagFilter(conditions, 'owner_id', new_tag='id')
-    if user_q_filter:
-        for u in User.objects.filter(
-            user_q_filter
-        ):
-            initial[u.username] = True
+    if len(conditions) == 2:
+        initial = conditions
+    else:
+        initial = dict()
+        initial['date__gte'] = conditions['date__gte']
+        initial['date__lte'] = conditions['date__lte']
+
+        spt_q_filter = tagFilter(
+            conditions,
+            'spendingType_id',
+            new_tag='id'
+        )
+        if spt_q_filter:
+            for s in Sp_t.objects.filter(
+                spt_q_filter
+            ):
+                initial[s.name] = True
+
+        income_q_filter = tagFilter(
+            conditions,
+            'incomeType_id',
+            new_tag='id'
+        )
+        if income_q_filter:
+            for i in Account.objects.filter(
+                income_q_filter
+            ):
+                initial[i.name] = True
+
+        user_q_filter = tagFilter(
+            conditions,
+            'owner_id',
+            new_tag='id'
+        )
+        if user_q_filter:
+            for u in User.objects.filter(
+                user_q_filter
+            ):
+                initial[u.username] = True
+
     return initial
+
+
+def conditions_from(view_args):
+    if not view_args:
+        end = date.today()
+        start = end.replace(day=1)
+        end_str = end.strftime('%d-%m-%Y')
+        start_str = start.strftime('%d-%m-%Y')
+        conditions = {
+            'date__gte': start_str,
+            'date__lte': end_str
+        }
+    else:
+        args_list = list(view_args)
+        del args_list[::3]
+        conditions = dict(zip(args_list[::2], args_list[1::2]))
+        if None in conditions.keys():
+            del conditions[None]
+        if conditions['date__gte'] > conditions['date__lte']:
+            conditions['date__gte'], conditions['date__lte'] =\
+                conditions['date__lte'], conditions['date__gte']
+
+    return conditions
