@@ -6,7 +6,7 @@ from account.models import Account
 
 
 class DateRangeForm(forms.Form):
-    startDate = forms.DateField(
+    date__gte = forms.DateField(
         required=True,
         label='с',
         input_formats=[
@@ -19,7 +19,7 @@ class DateRangeForm(forms.Form):
         ],
         widget=CalendarWidget()
     )
-    endDate = forms.DateField(
+    date__lte = forms.DateField(
         required=True,
         label='по',
         input_formats=[
@@ -38,17 +38,14 @@ class DateRangeForm(forms.Form):
         for u in User.objects.all():
             self.fields[u.username] = forms.BooleanField(
                 required=False,
-                initial=True,
             )
         for a in Account.objects.all():
             self.fields[a.name] = forms.BooleanField(
                 required=False,
-                initial=True,
             )
         for s in SpendingType.objects.all():
             self.fields[s.name] = forms.BooleanField(
                 required=False,
-                initial=True,
             )
 
     def userTag_fields(self):
@@ -72,6 +69,6 @@ class DateRangeForm(forms.Form):
     def dateTag_fields(self):
         return [
             field for field in self
-            if field.name == 'endDate' or
-            field.name == 'startDate'
+            if field.name == 'date__lte' or
+            field.name == 'date__gte'
         ]
