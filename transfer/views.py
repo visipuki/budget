@@ -10,46 +10,43 @@ from account.models import Account
 
 @login_required
 def transferView(request, *args):
+    user = request.user
     if request.method == 'POST':
-        save_transfer(request)
-        return HttpResponseRedirect('/transfer/')
+        form = TransferForm(request.POST)
+        if form.is_valid():
+            save_transfer(form)
+            return HttpResponseRedirect('/transfer/')
     else:
-        user = request.user
         if args:
             initial_form_values = initial_from_object(args[0])
         else:
             initial_form_values = generate_initial(user)
         form = TransferForm(initial=initial_form_values)
-        account_list = list(Account.objects.all())\
-            + list(DebtAccount.objects.all())
-        latest_transfer_list = Transfer.objects.order_by('-modified')[:5]
-        context = {
-            'account_list': account_list,
-            'latest_transfer_list': latest_transfer_list[::-1],
-            'form': form,
-            'username': user
-        }
-        return render(
-            request,
-            'transfer/index.html',
-            context
-        )
+    account_list = list(Account.objects.all())\
+        + list(DebtAccount.objects.all())
+    latest_transfer_list = Transfer.objects.order_by('-modified')[:10]
+    context = {
+        'account_list': account_list,
+        'latest_transfer_list': latest_transfer_list[::-1],
+        'form': form,
+        'username': user
+    }
+    return render(
+        request,
+        'transfer/index.html',
+        context
+    )
 
 
-def save_transfer(request):
-    form = TransferForm(request.POST)
-    if form.is_valid():
-        date = form.cleaned_data['date']
+def save_transfer(form):
         money = form.cleaned_data['money']
-        comment = form.cleaned_data['comment']
-        owner = form.cleaned_data['owner']
         source = form.cleaned_data['source']
         receiver = form.cleaned_data['receiver']
         Transfer(
-            date=date,
+            date=form.cleaned_data['date'],
             money=money,
-            comment=comment,
-            owner=owner,
+            comment=form.cleaned_data['comment'],
+            owner=form.cleaned_data['owner'],
             source=source,
             receiver=receiver,
         ).save()

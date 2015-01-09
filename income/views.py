@@ -10,48 +10,45 @@ from account.models import Account
 
 @login_required
 def incomeView(request, *args):
+    user = request.user
     if request.method == 'POST':
-        save_income(request)
-        return HttpResponseRedirect('/income/')
+        form = IncomeForm(request.POST)
+        if form.is_valid():
+            save_income(form)
+            return HttpResponseRedirect('/income/')
     else:
-        user = request.user
         if args:
             initial_form_values = initial_from_object(args[0])
         else:
             initial_form_values = generate_initial(user)
         form = IncomeForm(initial=initial_form_values)
-        account_list = list(Account.objects.all())\
-            + list(DebtAccount.objects.all())
-        latest_income_list = Income.objects.order_by('-modified')[:5]
-        context = {
-            'account_list': account_list,
-            'latest_income_list': latest_income_list[::-1],
-            'form': form,
-            'username': user
-        }
-        return render(
-            request,
-            './income/index.html',
-            context
-        )
+    account_list = list(Account.objects.all())\
+        + list(DebtAccount.objects.all())
+    latest_income_list = Income.objects.order_by('-modified')[:10]
+    context = {
+        'account_list': account_list,
+        'latest_income_list': latest_income_list[::-1],
+        'form': form,
+        'username': user
+    }
+    return render(
+        request,
+        './income/index.html',
+        context
+    )
 
 
-def save_income(request):
-    form = IncomeForm(request.POST)
-    if form.is_valid():
-        date = form.cleaned_data['date']
-        money = form.cleaned_data['money']
-        comment = form.cleaned_data['comment']
-        owner = form.cleaned_data['owner']
-        incomeType = form.cleaned_data['incomeType']
-        Income(
-            date=date,
-            money=money,
-            comment=comment,
-            owner=owner,
-            incomeType=incomeType
-        ).save()
-        change_account(incomeType, money)
+def save_income(form):
+    money = form.cleaned_data['money']
+    incomeType = form.cleaned_data['incomeType']
+    Income(
+        date=form.cleaned_data['date'],
+        money=money,
+        comment=form.cleaned_data['comment'],
+        owner=form.cleaned_data['owner'],
+        incomeType=incomeType
+    ).save()
+    change_account(incomeType, money)
 
 
 def change_account(account, income):
