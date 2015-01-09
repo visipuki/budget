@@ -12,17 +12,17 @@
   </div>
   <div id="userFilter">
   {% for field in form.userTag_fields %}
-      {{ field.label_tag }} {{ field }}
+      {{ field }}{{ field.label_tag }}
   {% endfor %}
   </div>
   <div id="AccountFilter">
   {% for field in form.accountTag_fields %}
-      {{ field.label_tag }} {{ field }}
+      {{ field }}{{ field.label_tag }}
   {% endfor %}
   </div>
   <div id="SpendingTypeFilter">
   {% for field in form.spendingTypeTag_fields %}
-      {{ field.label_tag }} {{ field }}
+      {{ field }}{{ field.label_tag }}
   {% endfor %}
 </div>
 <input type="submit" value="Обновить" />
